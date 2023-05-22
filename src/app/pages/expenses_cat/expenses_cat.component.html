@@ -1,0 +1,51 @@
+<div class=" content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">اضافه فئه مصروفات</h5>
+                </div>
+                <div class=" card-body">
+                    <div class="alert alert-danger" role="alert" *ngIf="err">
+                        حدث خطأ
+                    </div>
+                    <form [formGroup]="catForm" (ngSubmit)="onSubmit()">
+                        <div class=" row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">اسم الفئه</label>
+                                    <input type="text" formControlName="name" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+                                    <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                                        <div *ngIf="f.name.errors.required">تحديد الفئه الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger" type="submit">أضافه</button>
+                        </div>
+                    </form>
+                </div>
+          
+
+
+                <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                        <thead class="text-center">
+                            <tr>
+                                <th>اسم الفئه</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-right">
+                            <tr *ngFor="let cats of expensescats;">
+                                <td>{{cats.name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

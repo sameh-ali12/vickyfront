@@ -1,0 +1,113 @@
+<div class="content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">تقارير خصومات العملاء</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <div class="row">
+              <div class="col-md-12">
+                <div class=" form-group" style="margin-top:20px !important;">
+                  <ng-autocomplete  #auto
+                  [data]="clients"
+                  [searchKeyword]="keyword"
+                  placeholder="اختار العميل"
+                  (selected)='selectEvent($event)'
+                  [itemTemplate]="itemTemplate"
+                  [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.name"></a>
+                </ng-template>
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound"></div>
+                </ng-template>
+                </div>
+                <!-- <div class=" form-group">
+                  <label class="pull-right">العميل</label>
+                  <select formControlName="client" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.client.errors }">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let client of clients;let i=index" value={{client._id}}>{{client.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && s.client.errors" class="invalid-feedback">
+                    <div *ngIf="s.client.errors.required">تحديد العميل الزامي</div>
+                  </div>
+                </div> -->
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">من</label>
+                  <input type="date" formControlName="from" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.from.errors }" />
+                  <div *ngIf="submitted && s.from.errors" class="invalid-feedback">
+                    <div *ngIf="s.from.errors.required"> تحديد القيمه الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">الي</label>
+                  <input type="date" formControlName="to" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.to.errors }" />
+                  <div *ngIf="submitted && s.to.errors" class="invalid-feedback">
+                    <div *ngIf="s.to.errors.required"> تحديد القيمه الزامي</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-12">
+              <button class="btn btn-fill btn-danger">بحث</button>
+            </div>
+          </form>
+          <button class="btn btn-fill btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i> طباعه الكل
+  </button>
+  <!-- report -->
+  
+  <div class="card" style="padding:0!important" id="clients">
+ 
+    <div class="card-body">
+      <div class=" table-responsive">
+        <table class=" table tablesorter pull-right" id="">
+          <thead class="text-center">
+            <tr>
+              <th>التاريخ</th>
+              <th>المبلغ</th>
+              <th>ملاحظات</th>
+
+            </tr>
+          </thead>
+          <tbody class="text-right">
+            <tr *ngFor="let client of obj;">
+              <td>{{client.daterecived | date: 'dd/MM/yyyy'}}</td>
+              <td>{{client.value}}</td>
+              <td>{{client.note}}</td>
+            </tr>
+            <tr>
+              <td>
+                <hr style="border: 1px solid red; width:100%;">
+              </td>
+              <td>
+                <hr style="border: 1px solid red; width:100%;">
+              </td>
+              <td>
+                <hr style="border: 1px solid red; width:100%;">
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; color: #1c2128;">الاجمالي</td>
+              <td style="font-weight: bold; color: #1c2128;">{{totaldebtvalue}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

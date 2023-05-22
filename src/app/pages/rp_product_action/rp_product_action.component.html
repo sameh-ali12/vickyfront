@@ -1,0 +1,818 @@
+<div class=" content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class="card">
+        <div class="alert alert-danger" role="alert" *ngIf="err">
+          {{message}}
+        </div>
+        <form [formGroup]="searchForm" class="card" (ngSubmit)="onSubmitsearch()">
+          <div class="row">
+            <div class=" col-md-12">
+              <div class="form-group">
+                <ng-autocomplete  #auto
+                [data]="products"
+                [searchKeyword]="keyword"
+                placeholder="اختار المنتج"
+                (selected)='selectEvent($event)'
+                [itemTemplate]="itemTemplate"
+                [notFoundTemplate]="notFoundTemplate">
+              </ng-autocomplete>
+              <ng-template #itemTemplate let-item>
+                <a [innerHTML]="item.name"></a>
+              </ng-template>
+              <ng-template #notFoundTemplate let-notFound>
+                <div [innerHTML]="notFound"></div>
+              </ng-template>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class=" form-group">
+                <label class="pull-right">من</label>
+                <input type="date" formControlName="from" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.from.errors }" />
+                <div *ngIf="submitted && s.from.errors" class="invalid-feedback">
+                  <div *ngIf="s.from.errors.required"> تحديد القيمه الزامي</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class=" form-group">
+                <label class="pull-right">الي</label>
+                <input type="date" formControlName="to" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.to.errors }" />
+                <div *ngIf="submitted && s.to.errors" class="invalid-feedback">
+                  <div *ngIf="s.to.errors.required"> تحديد القيمه الزامي</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-12">
+            <button class="btn btn-fill btn-danger">بحث</button>
+          </div>
+        </form>
+        <div class="col-md-6">
+          <button class="btn btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+      <div *ngFor="let productaction of obj;let i=index" id={{i}}>
+        <!-- buy inside  -->
+        <div class="card" *ngIf="productaction.buyinside.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره بيع الي شريك</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال:
+                  {{productaction.buyinside.billid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء:
+                  {{productaction.buyinside.billid.dateaction | date: 'dd/MM/yyyy'}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                          <th>المخزن</th>
+
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.buyinside.billid.details;let i=index">
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.viewquntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.viewquntity*product.price}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.fromstore.name}}</td>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.viewquntity}}</td>
+                            <td>{{product.price}}</td>
+                            <td>{{product.viewquntity*product.price}}</td>
+                            <td>{{product.fromstore.name}}</td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{productaction.buyinside.billid.total}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{productaction.buyinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي : {{productaction.buyinside.billid.total-productaction.buyinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الي : {{productaction.buyinside.billid.to.name}}
+                  </div>
+
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- sell inside -->
+        <div class="card" *ngIf="productaction.sellinside.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">طلب شراء من شريك</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال:
+                  {{productaction.sellinside.billid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء:
+                  {{productaction.sellinside.billid.dateaction | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  الي مخزن : {{productaction.sellinside.billid.tostore.name}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.sellinside.billid.details;let i=index">
+
+
+
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.viewquntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.viewquntity*product.price}}</td>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.viewquntity}}</td>
+                            <td>{{product.price}}</td>
+                            <td>{{product.viewquntity*product.price}}</td>
+                          </ng-container>
+
+
+                         
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{productaction.sellinside.billid.total}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{productaction.sellinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي : {{productaction.sellinside.billid.total-productaction.sellinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    من : {{productaction.sellinside.billid.from.name}}
+                  </div>
+
+
+
+
+                </div>
+
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- cardownload -->
+        <div class="card" *ngIf="productaction.cardownload.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">تنزيل السيارات</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ التحميل:
+                  {{productaction.cardownload.cardownloadid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  المندوب :
+                  {{productaction.cardownload.cardownloadid.sales.name }}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل التحميل</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>المخزن</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.cardownload.cardownloadid.details;let i=index">
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                            <td>{{product.store.name}}</td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- carupload -->
+        <div class="card" *ngIf="productaction.carupload.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">تحميل السيارات</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ التحميل:
+                  {{productaction.carupload.caruploadid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  المندوب :
+                  {{productaction.carupload.caruploadid.sales.name }}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل التحميل</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>المخزن</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.carupload.caruploadid.details;let i=index">
+                 
+
+
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                            <td>{{product.store.name}}</td>
+                          </ng-container>
+
+
+
+                        </tr>
+
+
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- buy from supplier -->
+        <div class="card" *ngIf="productaction.buyfromsupplier.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره شراء</h3>
+          </div>
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال:
+                  {{productaction.buyfromsupplier.billid.date | date: 'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رقم الفاتوره:
+                  {{productaction.buyfromsupplier.billid.billno}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  المخزن:
+                  {{productaction.buyfromsupplier.billid.store.name}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.buyfromsupplier.billid.details;let i=index">
+
+                     
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity*product.price}}</td>
+
+                          </ng-container>
+                          
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                            <td>{{product.price}}</td>
+                          <td>{{product.quntity*product.price}}</td>
+                          </ng-container>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{productaction.buyfromsupplier.billid.totalamount}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{productaction.buyfromsupplier.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي :
+                    {{productaction.buyfromsupplier.billid.totalamount-productaction.buyfromsupplier.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                    *ngIf="!productaction.buyfromsupplier.billid.forclient">
+                    المورد : {{productaction.buyfromsupplier.billid.supplier.name}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                    *ngIf="productaction.buyfromsupplier.billid.forclient">
+                    العميل : {{productaction.buyfromsupplier.billid.client.name}}
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+           <!-- sell from sales -->
+           <div class="card" *ngIf="productaction.sellforclient.status">
+            <div class="card-header mb-5">
+              <h3 class=" card-title text-right">فاتوره مبيعات </h3>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    تاريخ :
+                    {{productaction.sellforclient.billid.date | date: 'dd/MM/yyyy'}}
+                  </div>
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    رقم الفاتوره :
+                    {{productaction.sellforclient.billid.billno}}
+                  </div>
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                     المندوب :
+                    {{productaction.sellforclient.billid.sales.name}}
+                  </div>
+  
+  
+                </div>
+                <div class=" card">
+                  <div class=" card-header">
+                    <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                  </div>
+                  <div class=" card-body">
+                    <div class=" table-responsive">
+                      <table class=" table tablesorter pull-right" id="">
+                        <thead class="text-center">
+                          <tr>
+                            <th>الصنف</th>
+                            <th>الوحده</th>
+                            <th>الكميه</th>
+                            <th>السعر</th>
+                            <th>الاجمالي</th>
+  
+                          </tr>
+                        </thead>
+                        <tbody class="text-right">
+                          <tr *ngFor="let product of productaction.sellforclient.billid.details;let i=index">
+  
+                            <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                              <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                              <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                              <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                              <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                              <td style="color: crimson !important;font-weight: bold;">{{product.quntity*product.price}}</td>
+                            </ng-container>
+                            
+                            <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                              <td>{{product.productid.name}}</td>
+                              <td>{{product.unitname}}</td>
+                              <td>{{product.quntity}}</td>
+                              <td>{{product.price}}</td>
+                            <td>{{product.quntity*product.price}}</td>
+                            </ng-container>
+  
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                      الاجمالي : {{productaction.sellforclient.billid.totalamount}}
+                    </div>
+                    <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                      المدفوع : {{productaction.sellforclient.billid.cashed}}
+                    </div>
+                    <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                      الخصم : {{productaction.sellforclient.billid.discount}}
+                    </div>
+  
+                    <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                      المتبقي : {{productaction.sellforclient.billid.totalamount-productaction.sellforclient.billid.cashed}}
+                    </div>
+  
+                    <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;"
+                      *ngIf="!productaction.sellforclient.billid.forsupplier">
+                      العميل : {{productaction.sellforclient.billid.client.name}}
+                    </div>
+                    <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                      *ngIf="productaction.sellforclient.billid.forsupplier">
+                      المورد : {{productaction.sellforclient.billid.supplier.name}}
+                    </div>
+  
+                  </div>
+                  <hr style="border: 1px solid red;">
+                </div>
+              </div>
+            </div>
+          </div>
+        
+        <!-- sell from store -->
+        <div class="card" *ngIf="productaction.sellfromstore.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره مبيعات من المخزن</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{productaction.sellfromstore.billid.date | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  رقم الفاتوره :
+                  {{productaction.sellfromstore.billid.billno}}
+                </div>
+
+
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                          <th>المخزن</th>
+
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.sellfromstore.billid.details;let i=index">
+
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity*product.price}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.fromstore.name}}</td>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                            <td>{{product.price}}</td>
+                          <td>{{product.quntity*product.price}}</td>
+                          <td>{{product.fromstore.name}}</td>
+                          </ng-container>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{productaction.sellfromstore.billid.totalamount}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{productaction.sellfromstore.billid.cashed}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الخصم : {{productaction.sellfromstore.billid.discount}}
+                  </div>
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي : {{productaction.sellfromstore.billid.totalamount-productaction.sellfromstore.billid.cashed}}
+                  </div>
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;"
+                    *ngIf="!productaction.sellfromstore.billid.forsupplier">
+                    العميل : {{productaction.sellfromstore.billid.client.name}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                    *ngIf="productaction.sellfromstore.billid.forsupplier">
+                    المورد : {{productaction.sellfromstore.billid.supplier.name}}
+                  </div>
+
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- transfer to another store -->
+        <div class="card" *ngIf="productaction.transferproducts.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">تحويل بضاعه</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{productaction.transferproducts.transferid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+
+
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>من مخزن</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of productaction.transferproducts.transferid.details;let i=index">
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                          </ng-container>
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                          <td>{{product.store.name}}</td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الي مخزن : {{productaction.transferproducts.transferid.tostore.name}}
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- reback from suppliers -->
+        <div class="card" *ngIf="productaction.rebackfromsupplier.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">استرجاع بضاعه شراء</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{productaction.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="!productaction.rebackfromsupplier.billid.forclient">
+                  المورد :
+                  {{productaction.rebackfromsupplier.billid.supplier.name}}
+                </div>
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="productaction.rebackfromsupplier.billid.forclient">
+                  العميل :
+                  {{productaction.rebackfromsupplier.billid.client.name}}
+                </div>
+              </div>
+              <div class=" card"
+                *ngFor="let products of productaction.rebackfromsupplier.billid.rebackdetails;let i=index">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body"
+                  *ngIf="(productaction.daterecived | date: 'dd/MM/yyyy')  ==  (products.rebackdate | date: 'dd/MM/yyyy')">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of products.details;let i=index">
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                          </ng-container>
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- reback sell to clients -->
+        <div class="card" *ngIf="productaction.rebackselltoclients.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">استرجاع بضاعه بيع</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{productaction.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="!productaction.rebackselltoclients.billid.forsupplier">
+                  العميل :
+                  {{productaction.rebackselltoclients.billid.client.name}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="productaction.rebackselltoclients.billid.forsupplier">
+                  المورد :
+                  {{productaction.rebackselltoclients.billid.supplier.name}}
+                </div>
+             
+              </div>
+              <div class=" card"
+                *ngFor="let products of productaction.rebackselltoclients.billid.rebackdetails;let i=index">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body"
+                  *ngIf="(productaction.daterecived | date: 'dd/MM/yyyy')  ==  (products.rebackdate | date: 'dd/MM/yyyy')">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of products.details;let i=index">
+
+                          <ng-container *ngIf="(product.productid._id) == (selectedproduct._id)">
+                            <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                            <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                          </ng-container>
+                          <ng-container *ngIf="(product.productid._id) != (selectedproduct._id)">
+                            <td>{{product.productid.name}}</td>
+                            <td>{{product.unitname}}</td>
+                            <td>{{product.quntity}}</td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

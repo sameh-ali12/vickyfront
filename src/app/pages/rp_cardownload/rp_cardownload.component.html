@@ -1,0 +1,113 @@
+<div class="content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">تقارير تنزيلات السيارات</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <!-- <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div> -->
+            <div class="row">
+
+              <div class=" col-md-6 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right"> المندوب</label>
+                  <select formControlName="sales" class="form-control">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let man of sales;" value={{man._id}}>{{man.name}}</option>
+                  </select>
+
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="pull-right">المخزن</label>
+                  <select formControlName="store" class="form-control">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let store of stores;" value={{store._id}}>{{store.name}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">من</label>
+                  <input type="date" formControlName="from" class="form-control" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">الي</label>
+                  <input type="date" formControlName="to" class="form-control" />
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-fill btn-danger">بحث</button>
+          </form>
+          <button class="btn btn-fill btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+    <i id="carupload">
+
+      <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i>
+        طباعه الكل</button>
+      <div class="row"  *ngFor="let carupload of obj;let i=index" id={{i}}>
+
+        <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+          تاريخ التحميل:
+          {{carupload.daterecived | date: 'dd/MM/yyyy'}}
+        </div>
+    
+        <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+          المندوب:
+          {{carupload.sales.name}}
+        </div>
+    
+        <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+          ملاحظات:
+          {{carupload.note}}
+        </div>
+        <div class="col-md-12">
+          <div class="card">
+            <div class=" card-header">
+              <h4 class=" card-title pull-right">تفاصيل التحميل</h4>
+            </div>
+            <div class=" card-body">
+              <div class=" table-responsive">
+                <table style="font-size: 150%!important;color: black;" class="table table-bordered table-striped text-center" id="">
+                  <thead class="text-center">
+                    <tr>
+                      <th>الصنف</th>
+                      <th>الوحده</th>
+                      <th>الكميه</th>
+                      <th>المخزن</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-right">
+                    <tr *ngFor="let product of carupload.details;let i=index">
+                      <td>{{product.productid.name}}</td>
+                      <td>{{product.unitname}}</td>
+                      <td>{{product.quntity}}</td>
+                      <td>{{product.store.name}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+        </div>
+      </div>
+    </i>
+
+</div>

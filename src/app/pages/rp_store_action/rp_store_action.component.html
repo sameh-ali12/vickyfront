@@ -1,0 +1,1147 @@
+<div class=" content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class="card">
+        <div class="alert alert-danger" role="alert" *ngIf="err">
+          {{message}}
+        </div>
+        <form [formGroup]="searchForm" class="card" (ngSubmit)="onSubmitsearch()">
+          <div class="row">
+            <div class="form-group col-md-12">
+              <div class="form-group">
+                <label class="pull-right">المخزن</label>
+                <select formControlName="store" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.store.errors }">
+                  <option value="all" selected>كل المخازن</option>
+                  <option *ngFor="let store of stores;" value={{store._id}}>{{store.name}}</option>
+                </select>
+                <div *ngIf="submitted && s.store.errors" class="invalid-feedback">
+                  <div *ngIf="s.store.errors.required"> تحديد المخزن الزامي</div>
+                </div>
+              </div>
+              <div class=" form-group" style="margin-top:20px !important;">
+                <ng-autocomplete #auto [data]="products" [searchKeyword]="keyword" placeholder="اختار المنتج"
+                  (selected)='selectEvent($event)' [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate">
+                </ng-autocomplete>
+                <ng-template #itemTemplate let-item>
+                  <a [innerHTML]="item.name"></a>
+                </ng-template>
+                <ng-template #notFoundTemplate let-notFound>
+                  <div [innerHTML]="notFound"></div>
+                </ng-template>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class=" form-group">
+                <label class="pull-right">من</label>
+                <input type="date" formControlName="from" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.from.errors }" />
+                <div *ngIf="submitted && s.from.errors" class="invalid-feedback">
+                  <div *ngIf="s.from.errors.required"> تحديد القيمه الزامي</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class=" form-group">
+                <label class="pull-right">الي</label>
+                <input type="date" formControlName="to" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.to.errors }" />
+                <div *ngIf="submitted && s.to.errors" class="invalid-feedback">
+                  <div *ngIf="s.to.errors.required"> تحديد القيمه الزامي</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-12">
+            <button class="btn btn-fill btn-danger">بحث</button>
+          </div>
+        </form>
+        <div class="col-md-6">
+          <button class="btn btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="print()"><i class="fas fa-print"></i>
+        طباعه</button>
+        
+      <div id="print">
+        <ng-container *ngIf="!productaction">
+          <div *ngFor="let storeaction of obj;let i=index" id={{i}}>
+            <!-- buy inside  -->
+            <div class="card" *ngIf="storeaction.buyinside.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">فاتوره بيع الي شريك</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ الارسال:
+                      {{storeaction.buyinside.billid.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ الاجراء:
+                      {{storeaction.buyinside.billid.dateaction | date: 'dd/MM/yyyy'}}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>السعر</th>
+                              <th>الاجمالي</th>
+                              <th>المخزن</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.buyinside.billid.details;let i=index">
+                              <ng-container *ngIf="(product.fromstore._id) == (storeaction.store._id)">
+                                <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.viewquntity}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  {{product.viewquntity*product.price}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.fromstore.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  <i>{{product.balancefromstorebefore
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancefromstorebefore /
+                                  product.productid.countunit | round}}
+                                </td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  <i>{{product.balancefromstoreafter
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancefromstoreafter /
+                                  product.productid.countunit | round}}
+                                </td>
+                              </ng-container>
+                              <ng-container *ngIf="(product.fromstore._id) != (storeaction.store._id)">
+                                <td>{{product.productid.name}}</td>
+                                <td>{{product.unitname}}</td>
+                                <td>{{product.viewquntity}}</td>
+                                <td>{{product.price}}</td>
+                                <td>{{product.viewquntity*product.price}}</td>
+                                <td>{{product.fromstore.name}}</td>
+                                <td><i>{{product.balancefromstorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancefromstorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td><i>{{product.balancefromstoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancefromstoreafter /
+                                  product.productid.countunit | round}}</td>
+                              </ng-container>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        الاجمالي : {{storeaction.buyinside.billid.total}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        المدفوع : {{storeaction.buyinside.billid.cashed}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        المتبقي : {{storeaction.buyinside.billid.total-storeaction.buyinside.billid.cashed}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        الي : {{storeaction.buyinside.billid.to.name}}
+                      </div>
+
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- sell inside -->
+            <div class="card" *ngIf="storeaction.sellinside.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">طلب شراء من شريك</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ الارسال:
+                      {{storeaction.sellinside.billid.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ الاجراء:
+                      {{storeaction.sellinside.billid.dateaction | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      الي مخزن : {{storeaction.sellinside.billid.tostore.name}}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>السعر</th>
+                              <th>الاجمالي</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.sellinside.billid.details;let i=index">
+                              <td>{{product.productid.name}}</td>
+                              <td>{{product.unitname}}</td>
+                              <td>{{product.viewquntity}}</td>
+                              <td>{{product.price}}</td>
+                              <td>{{product.viewquntity*product.price}}</td>
+                              <td><i>{{product.balancetostorebefore %
+                                  product.productid.countunit}}/</i> {{product.balancetostorebefore /
+                                product.productid.countunit | round}}</td>
+                              <td><i>{{product.balancetostoreafter %
+                                  product.productid.countunit}}/</i> {{product.balancetostoreafter /
+                                product.productid.countunit | round}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        الاجمالي : {{storeaction.sellinside.billid.total}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        المدفوع : {{storeaction.sellinside.billid.cashed}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        المتبقي : {{storeaction.sellinside.billid.total-storeaction.sellinside.billid.cashed}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        من : {{storeaction.sellinside.billid.from.name}}
+                      </div>
+
+
+
+
+                    </div>
+
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- cardownload -->
+            <div class="card" *ngIf="storeaction.cardownload.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">تنزيل السيارات</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ التحميل:
+                      {{storeaction.cardownload.cardownloadid.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      المندوب :
+                      {{storeaction.cardownload.cardownloadid.sales.name }}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل التحميل</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>المخزن</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.cardownload.cardownloadid.details;let i=index">
+                              <ng-container *ngIf="(product.store._id) == (storeaction.store._id)">
+                                <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;"><i>{{product.balancestorebefore
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td style="color: crimson !important;font-weight: bold;"><i>{{product.balancestoreafter
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                  product.productid.countunit | round}}</td>
+                              </ng-container>
+                              <ng-container *ngIf="(product.store._id) != (storeaction.store._id)">
+                                <td>{{product.productid.name}}</td>
+                                <td>{{product.unitname}}</td>
+                                <td>{{product.quntity}}</td>
+                                <td>{{product.store.name}}</td>
+                                <td><i>{{product.balancestorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td><i>{{product.balancestoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                  product.productid.countunit | round}}</td>
+                              </ng-container>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- carupload -->
+            <div class="card" *ngIf="storeaction.carupload.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">تحميل السيارات</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ التحميل:
+                      {{storeaction.carupload.caruploadid.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      المندوب :
+                      {{storeaction.carupload.caruploadid.sales.name }}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل التحميل</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>المخزن</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.carupload.caruploadid.details;let i=index">
+                              <ng-container *ngIf="(product.store._id) == (storeaction.store._id)">
+                                <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;"><i>{{product.balancestorebefore
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td style="color: crimson !important;font-weight: bold;"><i>{{product.balancestoreafter
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                  product.productid.countunit | round}}</td>
+                              </ng-container>
+                              <ng-container *ngIf="(product.store._id) != (storeaction.store._id)">
+                                <td>{{product.productid.name}}</td>
+                                <td>{{product.unitname}}</td>
+                                <td>{{product.quntity}}</td>
+                                <td>{{product.store.name}}</td>
+                                <td><i>{{product.balancestorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td><i>{{product.balancestoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                  product.productid.countunit | round}}</td>
+                              </ng-container>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- buy from supplier -->
+            <div class="card" *ngIf="storeaction.buyfromsupplier.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">فاتوره شراء</h3>
+              </div>
+              <div class="row">
+
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ الارسال:
+                      {{storeaction.buyfromsupplier.billid.date | date: 'dd/MM/yyyy'}}
+                    </div>
+
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      رقم الفاتوره:
+                      {{storeaction.buyfromsupplier.billid.billno}}
+                    </div>
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      المخزن:
+                      {{storeaction.buyfromsupplier.billid.store.name}}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>السعر</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                              <th>الاجمالي</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.buyfromsupplier.billid.details;let i=index">
+
+                              <td>{{product.productid.name}}</td>
+                              <td>{{product.unitname}}</td>
+                              <td>{{product.quntity}}</td>
+                              <td>{{product.price}}</td>
+                              <td><i>{{product.balancestorebefore %
+                                  product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                product.productid.countunit | round}}</td>
+                              <td><i>{{product.balancestoreafter %
+                                  product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                product.productid.countunit | round}}</td>
+                              <td>{{product.quntity*product.price}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        الاجمالي : {{storeaction.buyfromsupplier.billid.totalamount}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        المدفوع : {{storeaction.buyfromsupplier.billid.cashed}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                        المتبقي :
+                        {{storeaction.buyfromsupplier.billid.totalamount-storeaction.buyfromsupplier.billid.cashed}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                        *ngIf="!storeaction.buyfromsupplier.billid.forclient">
+                        المورد : {{storeaction.buyfromsupplier.billid.supplier.name}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                        *ngIf="storeaction.buyfromsupplier.billid.forclient">
+                        العميل : {{storeaction.buyfromsupplier.billid.client.name}}
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- sell from store -->
+            <div class="card" *ngIf="storeaction.sellfromstore.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">فاتوره مبيعات من المخزن</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ :
+                      {{storeaction.sellfromstore.billid.date | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      رقم الفاتوره :
+                      {{storeaction.sellfromstore.billid.billno}}
+                    </div>
+
+
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>السعر</th>
+                              <th>الاجمالي</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                              <th>المخزن</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.sellfromstore.billid.details;let i=index">
+
+
+                              <ng-container *ngIf="(product.fromstore._id) == (storeaction.store._id)">
+                                <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.price}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  {{product.quntity*product.price}}
+                                </td>
+
+                                <td style="color: crimson !important;font-weight: bold;"><i>{{product.balancestorebefore
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td style="color: crimson !important;font-weight: bold;"><i>{{product.balancestoreafter
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                  product.productid.countunit | round}}</td>
+
+                                <td style="color: crimson !important;font-weight: bold;">{{product.fromstore.name}}</td>
+                              </ng-container>
+                              <ng-container *ngIf="(product.fromstore._id) != (storeaction.store._id)">
+                                <td>{{product.productid.name}}</td>
+                                <td>{{product.unitname}}</td>
+                                <td>{{product.quntity}}</td>
+                                <td>{{product.price}}</td>
+                                <td>{{product.quntity*product.price}}</td>
+                                <td><i>{{product.balancestorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td><i>{{product.balancestoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                  product.productid.countunit | round}}</td>
+                                <td>{{product.fromstore.name}}</td>
+                              </ng-container>
+
+
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="row">
+
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                        الاجمالي : {{storeaction.sellfromstore.billid.totalamount}}
+                      </div>
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                        المدفوع : {{storeaction.sellfromstore.billid.cashed}}
+                      </div>
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                        الخصم : {{storeaction.sellfromstore.billid.discount}}
+                      </div>
+
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                        المتبقي :
+                        {{storeaction.sellfromstore.billid.totalamount-storeaction.sellfromstore.billid.cashed}}
+                      </div>
+
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;"
+                        *ngIf="!storeaction.sellfromstore.billid.forsupplier">
+                        العميل : {{storeaction.sellfromstore.billid.client.name}}
+                      </div>
+                      <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                        *ngIf="storeaction.sellfromstore.billid.forsupplier">
+                        المورد : {{storeaction.sellfromstore.billid.supplier.name}}
+                      </div>
+
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- transfer to another store -->
+            <div class="card" *ngIf="storeaction.transferproductsto.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">تحويل بضاعه وارد</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ :
+                      {{storeaction.transferproductsto.transferid.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                              <th>من مخزن</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+
+                            <tr *ngFor="let product of storeaction.transferproductsto.transferid.details;let i=index">
+                              <ng-container *ngIf="(product.store._id) == (storeaction.store._id)">
+                                <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  <i>{{product.balancetostorebefore
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancetostorebefore /
+                                  product.productid.countunit | round}}
+                                </td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  <i>{{product.balancetostoreafter
+                                    %
+                                    product.productid.countunit}}/</i> {{product.balancetostoreafter /
+                                  product.productid.countunit | round}}
+                                </td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                              </ng-container>
+                              <ng-container *ngIf="(product.store._id) != (storeaction.store._id)">
+                                <td>{{product.productid.name}}</td>
+                                <td>{{product.unitname}}</td>
+                                <td>{{product.quntity}}</td>
+                                <td><i>{{product.balancetostorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancetostorebefore /
+                                  product.productid.countunit | round}}</td>
+                                <td><i>{{product.balancetostoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancetostoreafter /
+                                  product.productid.countunit | round}}</td>
+                                <td>{{product.store.name}}</td>
+                              </ng-container>
+                            </tr>
+
+                          </tbody>
+
+                        </table>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                        الي مخزن : {{storeaction.transferproductsto.transferid.tostore.name}}
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- transfer from another store -->
+            <div class="card" *ngIf="storeaction.transferproductsfrom.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">تحويل بضاعه صادر</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ :
+                      {{storeaction.transferproductsfrom.transferid.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                  </div>
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right" id="">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                              <th>من مخزن</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of storeaction.transferproductsfrom.transferid.details;let i=index">
+                              <ng-container *ngIf="(product.store._id) == (storeaction.store._id)">
+                                <td style="color: crimson !important;font-weight: bold;">{{product.productid.name}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.unitname}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">{{product.quntity}}</td>
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  <i>{{product.balancefromstorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancefromstorebefore /
+                                  product.productid.countunit | round}}
+                                </td>
+
+                                <td style="color: crimson !important;font-weight: bold;">
+                                  <i>{{product.balancefromstoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancefromstoreafter /
+                                  product.productid.countunit | round}}
+                                </td>
+
+                                <td style="color: crimson !important;font-weight: bold;">{{product.store.name}}</td>
+                              </ng-container>
+                              <ng-container *ngIf="(product.store._id) != (storeaction.store._id)">
+                                <td>{{product.productid.name}}</td>
+                                <td>{{product.unitname}}</td>
+                                <td>{{product.quntity}}</td>
+                                <td>{{product.store.name}}</td>
+                                <td><i>{{product.balancefromstorebefore %
+                                    product.productid.countunit}}/</i> {{product.balancefromstorebefore /
+                                  product.productid.countunit | round}}</td>
+
+                                <td><i>{{product.balancefromstoreafter %
+                                    product.productid.countunit}}/</i> {{product.balancefromstoreafter /
+                                  product.productid.countunit | round}}</td>
+
+                              </ng-container>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                        الي مخزن : {{storeaction.transferproductsfrom.transferid.tostore.name}}
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- reback from suppliers -->
+            <div class="card" *ngIf="storeaction.rebackfromsupplier.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">استرجاع بضاعه شراء</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ :
+                      {{storeaction.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;"
+                      *ngIf="!storeaction.rebackfromsupplier.billid.forclient">
+                      المورد :
+                      {{storeaction.rebackfromsupplier.billid.supplier.name}}
+                    </div>
+                    <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;"
+                      *ngIf="storeaction.rebackfromsupplier.billid.forclient">
+                      العميل :
+                      {{storeaction.rebackfromsupplier.billid.client.name}}
+                    </div>
+                  </div>
+                  <div class=" card"
+                    *ngFor="let products of storeaction.rebackfromsupplier.billid.rebackdetails;let i=index">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body"
+                      *ngIf="(storeaction.daterecived | date: 'dd/MM/yyyy')  ==  (products.rebackdate | date: 'dd/MM/yyyy')">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of products.details;let i=index">
+                              <td>{{product.productid.name}}</td>
+                              <td>{{product.unitname}}</td>
+                              <td>{{product.quntity}}</td>
+
+                              <td><i>{{product.balancestorebefore %
+                                  product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                product.productid.countunit | round}}</td>
+                              <td><i>{{product.balancestoreafter %
+                                  product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                product.productid.countunit | round}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- reback sell to clients -->
+            <div class="card" *ngIf="storeaction.rebackselltoclients.status">
+              <div class="card-header mb-5">
+                <h3 class=" card-title text-right">استرجاع بضاعه بيع</h3>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      تاريخ :
+                      {{storeaction.daterecived | date: 'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;"
+                      *ngIf="!storeaction.rebackselltoclients.billid.forsupplier">
+                      العميل :
+                      {{storeaction.rebackselltoclients.billid.client.name}}
+                    </div>
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;"
+                      *ngIf="storeaction.rebackselltoclients.billid.forsupplier">
+                      المورد :
+                      {{storeaction.rebackselltoclients.billid.supplier.name}}
+                    </div>
+                    <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                      المخزن :
+                      {{storeaction.store.name}}
+                    </div>
+                  </div>
+                  <div class=" card"
+                    *ngFor="let products of storeaction.rebackselltoclients.billid.rebackdetails;let i=index">
+                    <div class=" card-header">
+                      <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                    </div>
+                    <div class=" card-body"
+                      *ngIf="(storeaction.daterecived | date: 'dd/MM/yyyy')  ==  (products.rebackdate | date: 'dd/MM/yyyy')">
+                      <div class=" table-responsive">
+                        <table class=" table tablesorter pull-right">
+                          <thead class="text-center">
+                            <tr>
+                              <th>الصنف</th>
+                              <th>الوحده</th>
+                              <th>الكميه</th>
+                              <th>الكميه قبل العمليه</th>
+                              <th>الكميه بعد العمليه</th>
+                            </tr>
+                          </thead>
+                          <tbody class="text-right">
+                            <tr *ngFor="let product of products.details;let i=index">
+                              <td>{{product.productid.name}}</td>
+                              <td>{{product.unitname}}</td>
+                              <td>{{product.quntity}}</td>
+                              <td><i>{{product.balancestorebefore %
+                                  product.productid.countunit}}/</i> {{product.balancestorebefore /
+                                product.productid.countunit | round}}</td>
+                              <td><i>{{product.balancestoreafter %
+                                  product.productid.countunit}}/</i> {{product.balancestoreafter /
+                                product.productid.countunit | round}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <hr style="border: 1px solid red;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="productaction">
+         
+          <table style="size: auto; width: 1000px  !important;">
+            <thead class="text-center">
+              <tr style="">
+                <th scope="col"   style="font-weight: bold;color: #1c2128;width:1% !important;" >الصنف:</th>
+                <th scope="col" class="text-right" style="font-weight: bold; color: #1c2128;">{{selectedproduct.name}}</th>
+                <th scope="col" style="font-weight: bold; color: #1c2128; width:1% !important;">من:</th>
+                <th scope="col" class="text-right"  style="font-weight: bold; color: #1c2128;" >{{searchobj.from | date: 'dd/MM/yyyy'}}</th>
+                <th scope="col"  style="font-weight: bold; color: #1c2128; width:1% !important;">الي:</th>
+                <th scope="col" class="text-right" style="font-weight: bold; color: #1c2128;">{{searchobj.to| date: 'dd/MM/yyyy'}}</th>
+                <th scope="col" style="font-weight: bold; color: #1c2128; width:1% !important;">المخزن:</th>
+                <th scope="col" class="text-right" style="font-weight: bold; color: #1c2128;">{{searchobj.store}}</th>
+              </tr>
+            </thead>
+          </table>
+     
+
+            
+          <table class="customtable" style="size: auto; width: 1000px !important;">
+            <thead class="text-center">
+              <tr>
+                <th scope="col" >التاريخ</th>
+                <th scope="col" >الكميه قبل العمليه</th>
+                <th scope="col" >الكميه</th>
+                <th scope="col" >الكميه بعد العمليه</th>
+                <th scope="col" >نوع العمليه</th>
+                <th scope="col" >رقم الاذن</th>
+                <th scope="col" >اسم العميل / المورد/المندوب</th>
+              </tr>
+            </thead>
+            <tbody class="text-right" >
+              <tr *ngFor="let el of subobj;let i=index" >
+                <ng-container *ngIf="el.type==='buyinside'">
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancefromstorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancefromstorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.quntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.quntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancefromstoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancefromstoreafter /
+                    el.obj.productid.countunit | round}}</td>
+                  <td>بيع لشريك</td>
+                  <td>ـــ</td>
+                  <td>{{el.contactname.name}}</td>
+                </ng-container>
+                <ng-container *ngIf="el.type==='sellinside'">
+
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancetostorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancetostorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.quntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.quntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancetostoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancetostoreafter /
+                    el.obj.productid.countunit | round}}</td>
+                  <td>شراء من شريك</td>
+                  <td>ـــ</td>
+                  <td>{{el.contactname.name}}</td>
+                </ng-container>
+                <ng-container *ngIf="el.type==='cardownload'">
+
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancestorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.realquntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.realquntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancestoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestoreafter /
+                    el.obj.productid.countunit | round}}</td>
+                  <td>تنزيل من سياره</td>
+                  <td>ـــ</td>
+                  <td>{{el.contactname.name}}</td>
+                </ng-container>
+                <ng-container *ngIf="el.type==='carupload'">
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancestorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.realquntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.realquntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancestoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>تحميل سياره</td>
+                  <td>ـــ</td>
+                  <td>{{el.contactname.name}}</td>
+
+                </ng-container>
+                <ng-container *ngIf="el.type==='buyfromsupplier'">
+
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancestorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.realquntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.realquntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancestoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>فاتوره شراء</td>
+                  <td>{{el.billno}}</td>
+                  <td>
+                    <i *ngIf="el.contactname.forclient">{{el.contactname.client.name}}</i>
+                    <i *ngIf="!el.contactname.forclient">{{el.contactname.supplier.name}}</i>
+                  </td>
+                </ng-container>
+                <ng-container *ngIf="el.type==='sellfromstore'">
+
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancestorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.realquntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.realquntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancestoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>فاتوره بيع</td>
+                  <td>{{el.billno}}</td>
+                  <td>
+                    <i *ngIf="el.contactname.forsupplier">{{el.contactname.supplier.name}}</i>
+                    <i *ngIf="!el.contactname.forsupplier">{{el.contactname.client.name}}</i>
+                  </td>
+                </ng-container>
+                <ng-container *ngIf="el.type==='transferproductsto'">
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+                  <td><i>{{el.obj.balancetostorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancetostorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.quntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.quntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancetostoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancetostoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>تحويل وارد</td>
+                  <td>ـــ</td>
+                  <td>مخزن : {{el.obj.store.name}}</td>
+                </ng-container>
+                <ng-container *ngIf="el.type==='transferproductsfrom'">
+
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancefromstorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancefromstorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.quntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.quntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancefromstoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancefromstoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>تحويل صادر</td>
+                  <td>ـــ</td>
+                  <td>مخزن : {{el.contactname.tostore.name}}</td>
+
+                </ng-container>
+                <ng-container *ngIf="el.type==='rebackfromsupplier'">
+
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancestorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.realquntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.realquntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancestoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>ارجاع فاتوره شراء</td>
+                  <td>{{el.billno}}</td>
+                  <td>
+
+                    <i *ngIf="el.contactname.forclient">
+                      {{el.contactname.client.name}}
+                    </i>
+
+                    <i *ngIf="!el.contactname.forclient">
+                      {{el.contactname.supplier.name}}
+                    </i>
+
+                  </td>
+
+                </ng-container>
+                <ng-container *ngIf="el.type==='rebackselltoclients'">
+                  <td>{{ el.date | date: 'dd/MM/yyyy'}}</td>
+
+                  <td><i>{{el.obj.balancestorebefore %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestorebefore /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.realquntity %
+                      el.obj.productid.countunit}}/</i> {{el.obj.realquntity /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td><i>{{el.obj.balancestoreafter %
+                      el.obj.productid.countunit}}/</i> {{el.obj.balancestoreafter /
+                    el.obj.productid.countunit | round}}</td>
+
+                  <td>ارجاع فاتوره بيع</td>
+                  <td>{{el.billno}}</td>
+                  <td>
+
+                    <i *ngIf="el.contactname.forsupplier">
+                      {{el.contactname.supplier.name}}
+
+                    </i>
+
+                    <i *ngIf="!el.contactname.forsupplier">
+                      {{el.contactname.client.name}}
+                    </i>
+                </ng-container>
+              </tr>
+            </tbody>
+          </table>
+
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+
+</div>

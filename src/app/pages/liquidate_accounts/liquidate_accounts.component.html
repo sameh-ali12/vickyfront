@@ -1,0 +1,417 @@
+<div class=" content">
+  <div class=" row"  *ngIf="!editmode">
+    <div class=" col-md-12">
+      <div class=" card">
+ 
+        <div class="alert alert-danger" role="alert" *ngIf="err">
+          {{message}}
+      </div>
+      
+        <form [formGroup]="searchForm" class="card" (ngSubmit)="onSubmitsearch()">
+          <div class="row">
+              <div class="form-group col-md-12">
+                <label class="pull-right">الي</label>
+                <select formControlName="partner" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.partner.errors }">
+                  <option value="" disabled></option>
+                  <option *ngFor="let user of users;" value={{user._id}}>{{user.name}}</option>
+                </select>
+                <div *ngIf="submitted && s.partner.errors" class="invalid-feedback">
+                  <div *ngIf="s.partner.errors.required">تحديد الشريك الزامي</div>
+                </div>
+              </div>
+              <div class="form-group col-md-12">
+                <button class="btn btn-fill btn-danger" style="width: 100%;">بحث</button>
+              </div>
+         
+          </div>
+        </form>
+      </div>
+<i id="printall">
+  <div class="card">
+    <div *ngIf="sellbills" class="card-header mb-5">
+      <h3 class=" card-title text-right">طلبات البيع</h3>
+    </div>
+    <div class="row" *ngFor="let sellbill of sellbills;let i=index">
+      <div class="col-md-12 pull-right">
+        <div class="row">
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الارسال:
+            {{sellbill.daterecived | date: 'dd/MM/yyyy'}}
+          </div>
+
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الاجراء:
+            {{sellbill.dateaction | date: 'dd/MM/yyyy'}}
+          </div>
+        </div>
+        <div class=" card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+          </div>
+          <div class=" card-body">
+            <div class=" table-responsive">
+              <table class=" table tablesorter pull-right" id="">
+                <thead class="text-center">
+                  <tr>
+                    <th>الصنف</th>
+                    <th>الوحده</th>
+                    <th>الكميه</th>
+                    <th>السعر</th>
+                    <th>الاجمالي</th>
+                    <th>المخزن</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr *ngFor="let product of sellbill.details;let i=index">
+                    <td>{{product.productid.name}}</td>
+                    <td>{{product.unitname}}</td>
+                    <td>{{product.viewquntity}}</td>
+                    <td>{{product.price}}</td>
+                    <td>{{product.viewquntity*product.price}}</td>
+                    <td>{{product.fromstore.name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- <div class="col-md-3">
+                <div class="text-right" style="font-weight: bold; color: #1c2128;">
+                  الاجمالي : {{sellbill.total}}
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="text-right" style="font-weight: bold; color: #1c2128;">
+                  المدفوع : {{sellbill.cashed}}
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="text-right" style="font-weight: bold; color: #1c2128;">
+                  المتبقي : {{sellbill.total-sellbill.cashed}}
+                </div>
+              </div> -->
+            </div>
+          </div>
+    
+
+
+
+          <div class="row">
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الاجمالي : {{sellbill.total}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المدفوع : {{sellbill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المتبقي : {{sellbill.total-sellbill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الي : {{sellbill.to.name}}
+            </div>
+          </div>
+          <div class=" td-actions text-right">
+            <button class=" btn btn-primary" type="button" placement="left" ngbTooltip="تعديل" (click)="editbill(sellbill)">
+              تعديل
+            </button>
+          </div>
+          <hr style="border: 1px solid red;">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div *ngIf="buybills" class="card-header mb-5">
+      <h3 class=" card-title text-right">طلبات الشراء</h3>
+    </div>
+    <div class="row" *ngFor="let buybill of buybills;let i=index">
+      <div class="col-md-12 pull-right">
+        <div class="row">
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الارسال:
+            {{buybill.daterecived | date: 'dd/MM/yyyy'}}
+          </div>
+
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الاجراء:
+            {{buybill.dateaction | date: 'dd/MM/yyyy'}}
+          </div>
+        </div>
+        <div class=" card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+          </div>
+          <div class=" card-body">
+            <div class=" table-responsive">
+              <table class=" table tablesorter pull-right" id="">
+                <thead class="text-center">
+                  <tr>
+                    <th>الصنف</th>
+                    <th>الوحده</th>
+                    <th>الكميه</th>
+                    <th>السعر</th>
+                    <th>الاجمالي</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr *ngFor="let product of buybill.details;let i=index">
+                    <td>{{product.productid.name}}</td>
+                    <td>{{product.unitname}}</td>
+                    <td>{{product.viewquntity}}</td>
+                    <td>
+                     <i *ngIf= "!editclicked">
+                      {{product.price}}
+                     </i> 
+                    <input *ngIf= "editclicked" type="number" value={{product.price}}/>
+                    </td>
+                    <td>{{product.viewquntity*product.price}}</td>
+                  </tr>
+                </tbody>
+              </table>
+          
+
+          </div>
+       
+
+     
+
+          <div class="row">
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الاجمالي : {{buybill.total}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المدفوع : {{buybill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المتبقي : {{buybill.total-buybill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              من : {{buybill.from.name}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الي مخزن : {{buybill.tostore.name}}
+            </div>
+          </div>
+          <div class=" td-actions text-right">
+            <button class=" btn btn-primary" type="button" placement="left" ngbTooltip="تعديل" (click)="editbill(buybill)">
+              تعديل
+            </button>
+          </div>
+          <hr style="border: 1px solid red;">
+        </div>
+
+
+        
+      </div>
+    </div>
+  </div>
+
+
+</div>
+<div class="card">
+  <div *ngIf="transferfromhim" class="card-header mb-5">
+    <h3 class=" card-title text-right">التحويلات الوارده</h3>
+  </div>
+  <div class="row" *ngFor="let tranfer of transferfromhim;let i=index">
+    <div class="col-md-12 pull-right">
+      <div class="col-md-3">
+        تاريخ الارسال:
+      </div>
+      <div class="col-md-3">
+        <div class="text-right" style="font-weight: bold; color: #1c2128;">
+          {{tranfer.daterecived | date: 'dd/MM/yyyy'}}
+        </div>
+      </div>
+      <div class="col-md-3">
+        تاريخ القبول:
+      </div>
+
+      <div class="col-md-3">
+        <div class="text-right" style="font-weight: bold; color: #1c2128;">
+          {{tranfer.dateaction | date: 'dd/MM/yyyy'}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="card-body">
+          <div class=" table-responsive">
+            <table class=" table tablesorter pull-right">
+              <thead class="text-center">
+                <tr>
+                  <th>من</th>
+                  <th>الي</th>
+                  <th>المبلغ</th>
+                  <th>ملاحظات</th>
+                  <th>الي خزينه</th>
+                </tr>
+              </thead>
+              <tbody class="text-right">
+                <tr>
+                  <td>{{tranfer.from.name}}</td>
+                  <td>{{tranfer.to.name}}</td>
+                  <td>{{tranfer.value}}</td>
+                  <td>{{tranfer.note}}</td>
+                  <td>{{tranfer.totreasury.name}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <hr style="border: 1px solid red;">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div *ngIf="transferfromus" class="card-header mb-5">
+    <h3 class=" card-title text-right">التحويلات الصادره</h3>
+  </div>
+  <div class="row" *ngFor="let tranfer of transferfromus;let i=index">
+    <div class="col-md-12 pull-right">
+      <div class="col-md-3">
+        تاريخ الارسال:
+      </div>
+      <div class="col-md-3">
+        <div class="text-right" style="font-weight: bold; color: #1c2128;">
+          {{tranfer.daterecived | date: 'dd/MM/yyyy'}}
+        </div>
+      </div>
+      <div class="col-md-3">
+        تاريخ القبول:
+      </div>
+
+      <div class="col-md-3">
+        <div class="text-right" style="font-weight: bold; color: #1c2128;">
+          {{tranfer.dateaction | date: 'dd/MM/yyyy'}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="card-body">
+          <div class=" table-responsive">
+            <table class=" table tablesorter pull-right">
+              <thead class="text-center">
+                <tr>
+                  <th>من</th>
+                  <th>الي</th>
+                  <th>المبلغ</th>
+                  <th>ملاحظات</th>
+                  <th>الي خزينه</th>
+                </tr>
+              </thead>
+              <tbody class="text-right">
+                <tr>
+                  <td>{{tranfer.from.name}}</td>
+                  <td>{{tranfer.to.name}}</td>
+                  <td>{{tranfer.value}}</td>
+                  <td>{{tranfer.note}}</td>
+                  <td>{{tranfer.fromtreasury.name}}</td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <hr style="border: 1px solid red;">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header mb-5">
+    <h3 class=" card-title text-right">الاجمالي النهائي :{{value}}</h3>
+    <button class="btn btn-fill btn-danger" (click)="submitall()">اعتماد التصفية</button>
+    <button class="btn btn-primary" (click)="print()" *ngIf="!printmode"><i class="fas fa-print"></i>
+      طباعه</button>
+  </div>
+</div>
+</i>
+ 
+
+   
+  </div>
+</div>
+
+<div class="row" *ngIf="editmode">
+ <div class="card">
+  <div class="card">
+    <div *ngIf="buybills" class="card-header mb-5">
+      <h3 class=" card-title text-right"> تعديل الاسعار</h3>
+    </div>
+    <div class="row">
+      <div class="col-md-12 pull-right">
+        <div class="col-md-3">
+          تاريخ الارسال:
+        </div>
+        <div class="col-md-3">
+          <div class="text-right" style="font-weight: bold; color: #1c2128;">
+            {{bill.daterecived | date: 'dd/MM/yyyy'}}
+          </div>
+        </div>
+        <div class="col-md-3">
+          تاريخ القبول:
+        </div>
+
+        <div class="col-md-3">
+          <div class="text-right" style="font-weight: bold; color: #1c2128;">
+            {{bill.dateaction | date: 'dd/MM/yyyy'}}
+          </div>
+        </div>
+        <div class=" card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+          </div>
+          <div class=" card-body">
+            <div class=" table-responsive">
+              <table class=" table tablesorter pull-right" id="">
+                <thead class="text-center">
+                  <tr>
+                    <th>الصنف</th>
+                    <th>الوحده</th>
+                    <th>الكميه</th>
+                    <th>السعر</th>
+                    <th>الاجمالي</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr *ngFor="let product of bill.details;let i=index">
+                    <td>{{product.productid.name}}</td>
+                    <td>{{product.unitname}}</td>
+                    <td>{{product.viewquntity}}</td>
+                    <td>
+                 
+                    <input  type="number" [(ngModel)]="product.price"/>
+                    </td>
+                    <td>{{product.viewquntity*product.price}}</td>
+                  </tr>
+                </tbody>
+              </table>
+  
+          
+         
+       
+          </div>
+          <td class=" td-actions text-right">
+            <button class=" btn btn-primary" type="button" placement="left" ngbTooltip="حفظ" (click)="saveeditbill(bill)">
+              حفظ
+            </button>
+            <button class=" btn btn-danger" type="button" placement="left" ngbTooltip="الغاء" (click)="canceleditbill()">
+              الغاء
+            </button>
+          </td>
+
+     
+
+
+
+
+          <hr style="border: 1px solid red;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+ </div>
+
+</div>

@@ -1,0 +1,118 @@
+<div class=" content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">الأصناف</h5>
+                </div>
+                <div class=" card-body">
+                    <div class="alert alert-danger" role="alert" *ngIf="err">
+                        حدث خطأ
+                    </div>
+                    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+                        <div class=" row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">اسم الصنف</label>
+                                    <input type="text" formControlName="name" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+                                    <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                                        <div *ngIf="f.name.errors.required">تحديد اسم المنتج الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">سعر الشراء</label>
+                                    <input type="number" formControlName="buyprice" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.buyprice.errors }" />
+                                    <div *ngIf="submitted && f.buyprice.errors" class="invalid-feedback">
+                                        <div *ngIf="f.buyprice.errors.required">تحديد سعر الشراء الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 pl-md-1">
+                                <div class="form-group">
+                                    <label class="pull-right">سعر البيع</label>
+                                    <input type="number" formControlName="sellprice" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.sellprice.errors }" />
+                                    <div *ngIf="submitted && f.sellprice.errors" class="invalid-feedback">
+                                        <div *ngIf="f.sellprice.errors.required">تحديد سعر البيع الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">الوحده الاساسيه</label>
+                                    <input type="text" formControlName="bigunit" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.bigunit.errors }" />
+                                    <div *ngIf="submitted && f.bigunit.errors" class="invalid-feedback">
+                                        <div *ngIf="f.bigunit.errors.required">تحديد الوحده الاساسيه الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">الوحده الفرعيه</label>
+                                    <input type="text" formControlName="smallunit" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.smallunit.errors }" />
+                                    <div *ngIf="submitted && f.smallunit.errors" class="invalid-feedback">
+                                        <div *ngIf="f.smallunit.errors.required">تحديد الوحده الفرعيه الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">عدد الوحده الفرعيه</label>
+                                    <input type="number" formControlName="countunit" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.countunit.errors }" />
+                                    <div *ngIf="submitted && f.countunit.errors" class="invalid-feedback">
+                                        <div *ngIf="f.countunit.errors.required">تحديد عدد الوحده الفرعيه الزامي
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger">أضافه</button>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <table  style="font-size: 150%!important;color: black;" class="table table-bordered table-striped text-center" id="products">
+                        <thead>
+                            <tr class="text-center">
+                                <th>م</th>
+                                <th>اسم الصنف</th>
+                                <th>سعر الشراء</th>
+                                <th>سعر البيع</th>
+                                <th>الوحده الاساسيه</th>
+                                <th>الوحده الفرعيه</th>
+                                <th>عددالوحده الفرعيه</th>
+                                <th>الاعدادت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of products;let i=index">
+                            <td>{{i+1}}</td>
+                                <td>{{product.name}}</td>
+                                <td>{{product.buyprice}}</td>
+                                <td>{{product.sellprice}}</td>
+                                <td>{{product.bigunit}}</td>
+                                <td>{{product.smallunit}}</td>
+                                <td>{{product.countunit}}</td>
+                                <td (click)="edit(product)"><a><i class="fas fa-pencil-alt"></i></a> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary" (click)="print()" *ngIf="!printmode"><i class="fas fa-print"></i>
+                    طباعه</button>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,273 @@
+<div class="content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">تقارير جرد المخازن </h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <!-- <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div> -->
+            <div class="row">
+
+              <div class=" col-md-6 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right"> الصنف</label>
+                  <select formControlName="product" class="form-control">
+                    <option value="all" selected>كل المنتجات</option>
+                    <option *ngFor="let product of products;" value={{product._id}}>{{product.name}}</option>
+                  </select>
+
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="pull-right">المخزن</label>
+                  <select formControlName="store" class="form-control">
+                    <option value="all" selected>كل المخازن</option>
+                    <option *ngFor="let store of stores;" value={{store._id}}>{{store.name}}</option>
+                  </select>
+
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-fill btn-danger">بحث</button>
+          </form>
+          <button class="btn btn-fill btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <i id="carupload">
+    <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i>
+      طباعه الكل</button>
+    <div *ngIf="singleproduct">
+      <div class="row" *ngFor="let store of obj;let i=index" id={{i}}>
+        <div class="col-md-12">
+          <div class="card">
+            <div class=" card-header">
+              <h4 class=" card-title pull-right">المخزن: {{store.name}}</h4>
+            </div>
+            <div class=" card-body">
+              <div class=" table-responsive">
+                <table class=" table tablesorter pull-right">
+                  <thead class="text-center">
+                    <tr>
+                      <th>الصنف</th>
+                      <th>الكميه بالوحده الصغري</th>
+                      <th>الكميه بالوحده الكبري</th>
+                      <th>القيمه الاجماليه</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-right">
+                    <tr *ngFor="let element of store.products;let i=index">
+                      <td *ngIf="element.productid._id == searchForm.value.product">{{element.productid.name}}</td>
+                      <td *ngIf="element.productid._id == searchForm.value.product">
+                        {{element.quantity}}({{element.productid.smallunit}})</td>
+
+                        <td *ngIf="element.productid._id == searchForm.value.product" > <i *ngIf="element.quantity % element.productid.countunit != 0"> {{element.quantity  %
+                          element.productid.countunit}}/</i> {{element.quantity /
+                            element.productid.countunit | round}}({{element.productid.bigunit}})
+                      </td>
+                      
+                      <td *ngIf="element.productid._id == searchForm.value.product" > 
+                        {{element.quantity *  element.productid.sellprice / element.productid.countunit }}
+                    </td>
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="multiproduct">
+      <div class="row" *ngFor="let store of obj;let i=index" id={{i}}>
+        <div class="col-md-12">
+          <div class="card">
+            <div class=" card-header">
+              <h4 class=" card-title pull-right">المخزن: {{store.name}}</h4>
+            </div>
+            <div class=" card-body">
+              <div class=" table-responsive">
+                <table class=" table tablesorter pull-right" id="">
+                  <thead class="text-center">
+                    <tr>
+                      <th>الصنف</th>
+                      <th>الكميه بالوحده الصغري</th>
+                      <th>الكميه بالوحده الكبري</th>
+                      <th>القيمه الاجماليه</th>
+
+                    </tr>
+                  </thead>
+                  <tbody class="text-right">
+                    <tr *ngFor="let element of store.products;let i=index">
+                      <ng-container *ngIf="element.quantity > 0;">
+                        <td>{{element.productid.name}}</td>
+                        <td>{{element.quantity}}({{element.productid.smallunit}})</td>
+                        <td> <i
+                          *ngIf="element.quantity % element.productid.countunit != 0"> {{element.quantity %
+                            element.productid.countunit}}/</i> {{element.quantity /
+                              element.productid.countunit | round}}({{element.productid.bigunit}})</td>
+
+                              <td> 
+                                {{element.quantity *  element.productid.sellprice / element.productid.countunit }}
+                            </td>
+        
+                      </ng-container>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class=" card">
+                  <div class=" card-header">
+                    <h4 class=" card-title pull-right" style="font-weight: bold; color: #1c2128;">الملخص</h4>
+                  </div>
+                  <div class=" card-body">
+                    <div class="table-responsive">
+                      <table class=" table tablesorter pull-right" id="">
+                        <thead class="text-center">
+                          <tr>
+                            <th style="font-weight: bold; color: #1c2128;">الاجمالي</th>
+        
+                          </tr>
+                        </thead>
+                        <tbody class="text-right">
+                          <tr>
+                            <td style="font-weight: bold; color: #1c2128;">{{total}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <hr style="border: 1px solid red;">
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="allstores">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class=" card-body">
+              <div class=" table-responsive">
+                <table class=" table tablesorter pull-right" id="">
+                  <thead class="text-center">
+                    <tr>
+                      <th>الصنف</th>
+                      <th>الكميه بالوحده الصغري</th>
+                      <th>الكميه بالوحده الكبري</th>
+                      <th>الاعدادت</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-right" *ngIf="allstoreoneproduct">
+                    <tr *ngFor="let element of obj;let i=index">
+                    <ng-container *ngIf="element.sum > 0">
+                      <td *ngIf="element._id._id == searchForm.value.product">{{element._id.name}}</td>
+                      <td *ngIf="element._id._id == searchForm.value.product">
+                        {{element.sum}}({{element._id.smallunit}})
+                      </td>
+                      <td *ngIf="element._id._id == searchForm.value.product"> <i
+                          *ngIf="element.sum % element._id.countunit != 0"> {{element.sum %
+                          element._id.countunit}}/</i> {{element.sum /
+                        element._id.countunit | round}}({{element._id.bigunit}})</td>
+                        <td *ngIf="element._id._id == searchForm.value.product" ><button class="btn btn-primary" (click)="getdetails(element)">تفاصيل</button></td>
+                    </ng-container>
+                    </tr>
+                  </tbody>
+                  <tbody class="text-right" *ngIf="allstoreallproduct">
+                      <tr *ngFor="let element of obj;let i=index">
+                        <ng-container *ngIf="element.sum > 0">
+                          <td>{{i+1}}</td>
+                        <td>{{element._id.name}}</td>
+                        <td>{{element.sum}}({{element._id.smallunit}})</td>
+                        <td><i *ngIf="element.sum % element._id.countunit != 0"> {{element.sum %
+                            element._id.countunit}}/</i> {{element.sum / element._id.countunit |
+                          round}}({{element._id.bigunit}})</td>
+                        <td><button class="btn btn-primary" (click)="getdetails(element)">تفاصيل</button></td>
+                        </ng-container>
+                      </tr>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="details">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class=" card-header">
+
+              <h5 class="title pull-right">{{detailsobj.element._id.name}}</h5>
+            </div>
+            <div class=" card-body">
+              <i *ngFor="let element of detailsobj.obj;let i=index">
+                <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                  اسم المخزن:
+                  {{element.name}}
+                </div>
+                <i *ngFor="let product of element.products;let i=index">
+                  <div class=" table-responsive" *ngIf="detailsobj.element._id._id== product.productid._id">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الكميه بالوحده الصغري</th>
+                          <th>الكميه بالوحده الكبري</th>
+                        </tr>
+                      </thead>
+
+                      <tbody class="text-right">
+                        <tr>
+                          <td>
+                            {{product.quantity}}({{detailsobj.element._id.smallunit}})</td>
+                          <td> <i *ngIf="product.quantity % detailsobj.element._id.countunit != 0"> {{product.quantity %
+                              detailsobj.element._id.countunit}}/</i> {{product.quantity /
+                            detailsobj.element._id.countunit | round}}({{detailsobj.element._id.bigunit}})
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </i>
+                <hr style="border: 1px solid red;">
+              </i>
+              <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                الاجمالي بالوحده الصغري:
+                {{detailsobj.element.sum}}({{detailsobj.element._id.smallunit}})
+              </div>
+              <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+                الاجمالي بالوحده الكبري:
+                <i *ngIf="detailsobj.element.sum % detailsobj.element._id.countunit != 0"> {{detailsobj.element.sum %
+                  detailsobj.element._id.countunit}}/</i> {{detailsobj.element.sum / detailsobj.element._id.countunit |
+                round}}({{detailsobj.element._id.bigunit}})
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+        </div>
+      </div>
+    </div>
+  </i>
+
+</div>

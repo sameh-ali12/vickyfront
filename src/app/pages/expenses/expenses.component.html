@@ -1,0 +1,94 @@
+<div class="content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">اضافه فئه مصروفات</h5>
+                </div>
+                <div class=" card-body">
+                    <div class="alert alert-danger" role="alert" *ngIf="err">
+                         {{message}}
+                    </div>
+                    <form [formGroup]="expensesForm" (ngSubmit)="onSubmit()">
+                        <div class=" row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">المبلغ</label>
+                                    <input type="number" formControlName="value" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.value.errors }" />
+                                    <div *ngIf="submitted && f.value.errors" class="invalid-feedback">
+                                        <div *ngIf="f.value.errors.required">تحديد المبلغ المصروف الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" col-md-4 pl-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">الفئه</label>
+                                    <select formControlName="cat" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.cat.errors }">
+                                        <option disabled></option>
+                                        <option *ngFor="let category of expensescats;" value={{category._id}}>
+                                            {{category.name}}</option>
+                                    </select>
+                                    <div *ngIf="submitted && f.cat.errors" class="invalid-feedback">
+                                        <div *ngIf="f.cat.errors.required">تحديد الفئه الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" col-md-4 pl-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">الخزينه</label>
+                                    <select formControlName="treasury" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.treasury.errors }">
+                                        <option value="" disabled></option>
+                                        <option *ngFor="let treasury of treasuries;" value={{treasury._id}}>
+                                            {{treasury.name}}</option>
+                                    </select>
+                                    <div *ngIf="submitted && f.treasury.errors" class="invalid-feedback">
+                                        <div *ngIf="f.treasury.errors.required">تحديد الخزينه الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">ملاحظات</label>
+                                    <input class=" form-control" formControlName="notes" type="text" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger" type="submit">أضافه</button>
+                        </div>
+                    </form>
+                </div>
+                <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                        <thead class="text-center">
+                            <tr>
+                                <th>اسم الفئه</th>
+                                <th>المبلغ</th>
+                                <th>الخزينه</th>
+                                <th>التاريخ</th>
+                                <th>ملاحظات</th>
+                        </thead>
+                        <tbody class="text-right">
+                            <tr *ngFor="let expense of expenses;">
+                                <td>{{expense.cat.name}}</td>
+                                <td>{{expense.value}}</td>
+                                <td>{{expense.fromtreasury.name}}</td>
+                                <td>{{expense.date | date: 'dd/MM/yyyy'}}</td>
+                                <td>{{expense.notes}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

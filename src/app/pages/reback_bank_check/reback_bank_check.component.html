@@ -1,0 +1,103 @@
+<div class=" content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">استراجاع الشيك</h5>
+                </div>
+                <div class=" card-body">
+                    <form [formGroup]="rebackcheckForm" (ngSubmit)="onSubmit()">
+                        <div class="alert alert-danger" role="alert" *ngIf="err">
+                            {{message}}
+                        </div>
+                        
+                        <div class=" row">
+                            <div class=" col-md-4 pl-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">العميل</label>
+                                    <select formControlName="client" class="form-control"
+                                        (change)="onChangeclient($event.target.value)"
+                                        [ngClass]="{ 'is-invalid': submitted && f.client.errors }">
+                                        <option value="" disabled></option>
+                                        <option *ngFor="let client of clients;" value={{client._id}}>{{client.name}}</option>
+                                    </select>
+                                    <div *ngIf="submitted && f.client.errors" class="invalid-feedback">
+                                        <div *ngIf="f.client.errors.required">تحديد العميل الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" col-md-4 pl-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">رقم الشيك</label>
+                                    <select formControlName="checkno" class="form-control"
+                                        (change)="onChangecheckno($event.target.value)"
+                                        [ngClass]="{ 'is-invalid': submitted && f.checkno.errors }">
+                                        <option value="" disabled selected></option>
+                                        <option *ngFor="let check of checkno;" value={{check.checkno}}>{{check.checkno}}
+                                        </option>
+                                    </select>
+                                    <div *ngIf="submitted && f.checkno.errors" class="invalid-feedback">
+                                        <div *ngIf="f.checkno.errors.required">تحديد رقم الشيك الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">قيمه الشيك</label>
+                                    <input class=" form-control" type="text" value={{selectedcheck.value}} disabled />
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" row">
+                        
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">الملاحظات</label>
+                                    <input class=" form-control" type="text" formControlName="notes" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class=" col-md-12 pr-md-1">
+                                <div class="form-group">
+                                    <h2 class="pull-right" *ngIf="selectedcheck.dateexpire">  تاريخ استحقاق الشيك   {{selectedcheck.dateexpire|date:'dd/MM/yyyy'}}</h2>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger" type="submit">استرجاع</button>
+                        </div>
+                    </form>
+                </div>
+                <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                        <thead class="text-center">
+                            <tr>
+                                <th>اسم العميل</th>
+                                <th>المبلغ</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>تاريخ الاسترجاع</th>
+                                <th>رقم الشيك</th>
+                                <th>الخزينه</th>
+                                <th>ملاحظات</th>
+                        </thead>
+                        <tbody class="text-right">
+                            <tr *ngFor="let check of checks;">
+                                <td>{{check.client.name}}</td>
+                                <td>{{check.value}}</td>
+                                <td>{{check.dateexpire | date: 'dd/MM/yyyy'}}</td>
+                                <td>{{check.dateaction | date: 'dd/MM/yyyy'}}</td>
+                                <td>{{check.checkno}}</td>
+                                <td>{{check.treasury.name}}</td>
+                                <td>{{check.note}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1088 @@
+<div class=" content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class="card">
+        <div class="alert alert-danger" role="alert" *ngIf="err">
+          {{message}}
+        </div>
+        <form [formGroup]="searchForm" class="card" (ngSubmit)="onSubmitsearch()">
+          <div class="row">
+            <div class="form-group col-md-12">
+              <div class="form-group">
+                <label class="pull-right">الخزينه</label>
+                <select formControlName="treasury" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.treasury.errors }">
+                  <option *ngFor="let treasury of treasuries;" value={{treasury._id}}>{{treasury.name}}</option>
+                </select>
+                <div *ngIf="submitted && s.treasury.errors" class="invalid-feedback">
+                  <div *ngIf="s.treasury.errors.required"> تحديد الخزينه الزامي</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class=" form-group">
+                <label class="pull-right">من</label>
+                <input type="date" formControlName="from" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.from.errors }" />
+                <div *ngIf="submitted && s.from.errors" class="invalid-feedback">
+                  <div *ngIf="s.from.errors.required"> تحديد القيمه الزامي</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class=" form-group">
+                <label class="pull-right">الي</label>
+                <input type="date" formControlName="to" class="form-control"
+                  [ngClass]="{ 'is-invalid': submitted && s.to.errors }" />
+                <div *ngIf="submitted && s.to.errors" class="invalid-feedback">
+                  <div *ngIf="s.to.errors.required"> تحديد القيمه الزامي</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-12">
+            <button class="btn btn-fill btn-danger">بحث</button>
+          </div>
+        </form>
+        <div class="col-md-6">
+          <button class="btn btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+      <div *ngFor="let treasuryaction of obj;let i=index">
+        <!-- buy inside  -->
+        <div class="card" *ngIf="treasuryaction.buyinside.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره بيع الي شريك</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال:
+                  {{treasuryaction.buyinside.billid.daterecived | date:'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء:
+                  {{treasuryaction.buyinside.billid.dateaction | date:'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  اجمالي الخزينه بعد العمليه:
+                  {{treasuryaction.buyinside.treasuryvalue}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  اجمالي مبلغ الشيكات بعد العمليه:
+                  {{treasuryaction.buyinside.checktreasuryvalue}}
+                </div>
+
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                          <th>المخزن</th>
+
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of treasuryaction.buyinside.billid.details;let i=index">
+
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.viewquntity}}</td>
+                          <td>{{product.price}}</td>
+                          <td>{{product.viewquntity*product.price}}</td>
+                          <td>{{product.fromstore.name}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{treasuryaction.buyinside.billid.total}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{treasuryaction.buyinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي : {{treasuryaction.buyinside.billid.total-treasuryaction.buyinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الي : {{treasuryaction.buyinside.billid.to.name}}
+                  </div>
+
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- sell inside -->
+        <div class="card" *ngIf="treasuryaction.sellinside.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">طلب شراء من شريك</h3>
+          </div>
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال:
+                  {{treasuryaction.sellinside.billid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء:
+                  {{treasuryaction.sellinside.billid.dateaction | date: 'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  اجمالي الخزينه بعد العمليه:
+                  {{treasuryaction.sellinside.treasuryvalue}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  اجمالي مبلغ الشيكات بعد العمليه:
+                  {{treasuryaction.sellinside.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of treasuryaction.sellinside.billid.details;let i=index">
+
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.viewquntity}}</td>
+                          <td>{{product.price}}</td>
+                          <td>{{product.viewquntity*product.price}}</td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{treasuryaction.sellinside.billid.total}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{treasuryaction.sellinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي : {{treasuryaction.sellinside.billid.total-treasuryaction.sellinside.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    من : {{treasuryaction.sellinside.billid.from.name}}
+                  </div>
+
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الي مخزن : {{treasuryaction.sellinside.billid.tostore.name}}
+                  </div>
+
+
+                </div>
+
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- buy from supplier -->
+        <div class="card" *ngIf="treasuryaction.buyfromsupplier.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره شراء  </h3>
+          </div>
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال:
+                  {{treasuryaction.buyfromsupplier.billid.date | date: 'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رقم الفاتورة:
+                  {{treasuryaction.buyfromsupplier.billid.billno}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  اجمالي الخزينه بعد العمليه:
+                  {{treasuryaction.buyfromsupplier.treasuryvalue}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  اجمالي مبلغ الشيكات بعد العمليه:
+                  {{treasuryaction.buyfromsupplier.checktreasuryvalue}}
+                </div>
+
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of treasuryaction.buyfromsupplier.billid.details;let i=index">
+
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.quntity}}</td>
+                          <td>{{product.price}}</td>
+                          <td>{{product.quntity*product.price}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{treasuryaction.buyfromsupplier.billid.totalamount}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{treasuryaction.buyfromsupplier.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي :
+                    {{treasuryaction.buyfromsupplier.billid.totalamount-treasuryaction.buyfromsupplier.billid.cashed}}
+                  </div>
+                  <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="!treasuryaction.buyfromsupplier.billid.forclient">
+                  المورد : {{treasuryaction.buyfromsupplier.billid.supplier.name}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="treasuryaction.buyfromsupplier.billid.forclient">
+                  العميل : {{treasuryaction.buyfromsupplier.billid.client.name}}
+                </div>
+
+
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- sell from store -->
+        <div class="card" *ngIf="treasuryaction.sellfromstore.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره مبيعات من المخزن</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.sellfromstore.billid.date | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رقم الفاتوره :
+                  {{treasuryaction.sellfromstore.billid.billno}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.sellfromstore.treasuryvalue}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.sellfromstore.checktreasuryvalue}}
+                </div>
+
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of treasuryaction.sellfromstore.billid.details;let i=index">
+
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.quntity}}</td>
+                          <td>{{product.price}}</td>
+                          <td>{{product.quntity*product.price}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{treasuryaction.sellfromstore.billid.totalamount}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{treasuryaction.sellfromstore.billid.cashed}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الخصم : {{treasuryaction.sellfromstore.billid.discount}}
+                  </div>
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي :
+                    {{treasuryaction.sellfromstore.billid.totalamount-treasuryaction.sellfromstore.billid.cashed}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="!treasuryaction.sellfromstore.billid.forsupplier">
+                  العميل : {{treasuryaction.sellfromstore.billid.client.name}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="treasuryaction.sellfromstore.billid.forsupplier">
+                  المورد : {{treasuryaction.sellfromstore.billid.supplier.name}}
+                </div>
+
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- sell to clients -->
+        <div class="card" *ngIf="treasuryaction.selltoclients.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">فاتوره مبيعات</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.selltoclients.billid.date | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                  رقم الفاتوره :
+                  {{treasuryaction.selltoclients.billid.billno}}
+                </div>
+
+                <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                  المندوب :
+                  {{treasuryaction.selltoclients.billid.sales.name}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.selltoclients.treasuryvalue}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.selltoclients.checktreasuryvalue}}
+                </div>
+
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                          <th>السعر</th>
+                          <th>الاجمالي</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of treasuryaction.selltoclients.billid.details;let i=index">
+
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.quntity}}</td>
+                          <td>{{product.price}}</td>
+                          <td>{{product.quntity*product.price}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{treasuryaction.selltoclients.billid.totalamount}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{treasuryaction.selltoclients.billid.cashed}}
+                  </div>
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    الخصم : {{treasuryaction.selltoclients.billid.discount}}
+                  </div>
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي :
+                    {{treasuryaction.selltoclients.billid.totalamount-treasuryaction.selltoclients.billid.cashed}}
+                  </div>
+
+
+                  <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="!treasuryaction.selltoclients.billid.forsupplier">
+                  العميل : {{treasuryaction.selltoclients.billid.client.name}}
+                </div>
+                <div class="col-md-2 text-right" style="font-weight: bold; color: #1c2128;"
+                  *ngIf="treasuryaction.selltoclients.billid.forsupplier">
+                  المورد : {{treasuryaction.selltoclients.billid.supplier.name}}
+                </div>
+
+
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- transfer for you -->
+        <div class="card" *ngIf="treasuryaction.partnertransfermoney.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right"
+              *ngIf="treasuryaction.partnertransfermoney.transferid.totreasury._id == searchForm.value.treasury">تحويل
+              وارد</h3>
+            <h3 class=" card-title text-right"
+              *ngIf="treasuryaction.partnertransfermoney.transferid.totreasury._id != searchForm.value.treasury">تحويل
+              صادر</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الارسال :
+                  {{treasuryaction.partnertransfermoney.transferid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء :
+                  {{treasuryaction.partnertransfermoney.transferid.dateaction | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.partnertransfermoney.treasuryvalue}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.partnertransfermoney.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل التحويل</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>من</th>
+                          <th>الي</th>
+                          <th>القيمه</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.partnertransfermoney.transferid.from.name}}</td>
+                          <td>{{treasuryaction.partnertransfermoney.transferid.to.name}}</td>
+                          <td>{{treasuryaction.partnertransfermoney.transferid.value}}</td>
+                          <td>{{treasuryaction.partnertransfermoney.transferid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- payment to suppliers -->
+        <div class="card" *ngIf="treasuryaction.paymenttosuppliers.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">سداد مديونيه الي مورد</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.paymenttosuppliers.paymenttosupplierid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.paymenttosuppliers.treasuryvalue}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.paymenttosuppliers.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الي</th>
+                          <th>القيمه</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.paymenttosuppliers.paymenttosupplierid.supplier.name}}</td>
+                          <td>{{treasuryaction.paymenttosuppliers.paymenttosupplierid.value}}</td>
+                          <td>{{treasuryaction.paymenttosuppliers.paymenttosupplierid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- check add -->
+        <div class="card" *ngIf="treasuryaction.checkadd.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">اضافه شيك بنكي</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.checkadd.checkid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.checkadd.treasuryvalue}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.checkadd.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>من</th>
+                          <th>القيمه</th>
+                          <th>رقم الشيك</th>
+                          <th>تاريخ الصرف</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.checkadd.checkid.client.name}}</td>
+                          <td>{{treasuryaction.checkadd.checkid.value}}</td>
+                          <td>{{treasuryaction.checkadd.checkid.checkno}}</td>
+                          <td>{{treasuryaction.checkadd.checkid.dateexpire | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{treasuryaction.checkadd.checkid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- check reback -->
+        <div class="card" *ngIf="treasuryaction.checkreback.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">استرجاع شيك بنكي</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.checkreback.checkid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء :
+                  {{treasuryaction.checkreback.checkid.dateaction | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.checkreback.treasuryvalue}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.checkreback.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الي</th>
+                          <th>القيمه</th>
+                          <th>رقم الشيك</th>
+                          <th>تاريخ الصرف</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.checkreback.checkid.client.name}}</td>
+                          <td>{{treasuryaction.checkreback.checkid.value}}</td>
+                          <td>{{treasuryaction.checkreback.checkid.checkno}}</td>
+                          <td>{{treasuryaction.checkreback.checkid.dateexpire | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{treasuryaction.checkreback.checkid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- check cash -->
+        <div class="card" *ngIf="treasuryaction.checkcash.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">صرف شيك بنكي</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.checkcash.checkid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ الاجراء :
+                  {{treasuryaction.checkcash.checkid.dateaction | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.checkcash.treasuryvalue}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.checkcash.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>من</th>
+                          <th>القيمه</th>
+                          <th>رقم الشيك</th>
+                          <th>تاريخ الصرف</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.checkcash.checkid.client.name}}</td>
+                          <td>{{treasuryaction.checkcash.checkid.value}}</td>
+                          <td>{{treasuryaction.checkcash.checkid.checkno}}</td>
+                          <td>{{treasuryaction.checkcash.checkid.dateexpire | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{treasuryaction.checkcash.checkid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- payment from client -->
+        <div class="card" *ngIf="treasuryaction.paymentfromclients.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">سداد مديونيه عميل</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.paymentfromclients.paymentid.daterecived | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.paymentfromclients.treasuryvalue}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.paymentfromclients.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>من</th>
+                          <th>القيمه</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.paymentfromclients.paymentid.client.name}}</td>
+                          <td>{{treasuryaction.paymentfromclients.paymentid.value}}</td>
+                          <td>{{treasuryaction.paymentfromclients.paymentid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- payment from sales -->
+        <!-- <div class="card" *ngIf="treasuryaction.paymentfromsales.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">توريد ماليه من مندوب</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.paymentfromsales.date. | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.paymentfromsales.treasuryvalue}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.paymentfromsales.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>من</th>
+                          <th>القيمه</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.paymentfromclients.paymentid.client.name}}</td>
+                          <td>{{treasuryaction.paymentfromclients.paymentid.value}}</td>
+                          <td>{{treasuryaction.paymentfromclients.paymentid.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- expenses -->
+        <div class="card" *ngIf="treasuryaction.expenses.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">مصروفات</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.expenses.expensesid.date | date: 'dd/MM/yyyy'}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.expenses.treasuryvalue}}
+                </div>
+                <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.expenses.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل العمليه</h4>
+                </div>
+                <div class=" card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الفئه</th>
+                          <th>القيمه</th>
+                          <th>ملاحظات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{treasuryaction.expenses.expensesid.cat.name}}</td>
+                          <td>{{treasuryaction.expenses.expensesid.value}}</td>
+                          <td>{{treasuryaction.expenses.expensesid.notes}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- reback from suppliers -->
+        <div class="card" *ngIf="treasuryaction.rebackfromsupplier.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">استرجاع فاتوره شراء</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.date | date: 'dd/MM/yyyy'}}
+                </div>
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                *ngIf="!treasuryaction.rebackfromsupplier.billid.forclient">
+                المورد :
+                {{treasuryaction.rebackfromsupplier.billid.supplier.name}}
+              </div>
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                *ngIf="treasuryaction.rebackfromsupplier.billid.forclient">
+                العميل :
+                {{treasuryaction.rebackfromsupplier.billid.client.name}}
+              </div>
+
+
+
+
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.rebackfromsupplier.treasuryvalue}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.rebackfromsupplier.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card"
+                *ngFor="let products of treasuryaction.rebackfromsupplier.billid.rebackdetails;let i=index">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class="card-body"
+                  *ngIf="(treasuryaction.date | date: 'dd/MM/yyyy')  ==  (products.rebackdate | date: 'dd/MM/yyyy')">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of products.details;let i=index">
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.quntity}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{products.totalamount}}
+                  </div>
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{products.cash}}
+                  </div>
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي :
+                    {{products.totalamount-products.cash}}
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- reback sell to clients -->
+        <div class="card" *ngIf="treasuryaction.rebackselltoclients.status">
+          <div class="card-header mb-5">
+            <h3 class=" card-title text-right">استرجاع فاتوره بيع</h3>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  تاريخ :
+                  {{treasuryaction.date | date: 'dd/MM/yyyy'}}
+                </div>
+
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                *ngIf="!treasuryaction.rebackselltoclients.billid.forsupplier">
+                العميل :
+                {{treasuryaction.rebackselltoclients.billid.client.name}}
+              </div>
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;"
+                *ngIf="treasuryaction.rebackselltoclients.billid.forsupplier">
+                المورد :
+                {{treasuryaction.rebackselltoclients.billid.supplier.name}}
+              </div>
+
+
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الخزينه بعد العمليه :
+                  {{treasuryaction.rebackselltoclients.treasuryvalue}}
+                </div>
+                <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                  رصيد الشيكات :
+                  {{treasuryaction.rebackselltoclients.checktreasuryvalue}}
+                </div>
+              </div>
+              <div class=" card"
+                *ngFor="let products of treasuryaction.rebackselltoclients.billid.rebackdetails;let i=index">
+                <div class=" card-header">
+                  <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+                </div>
+                <div class=" card-body"
+                  *ngIf="(treasuryaction.date | date: 'dd/MM/yyyy')  ==  (products.rebackdate | date: 'dd/MM/yyyy')">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>الصنف</th>
+                          <th>الوحده</th>
+                          <th>الكميه</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr *ngFor="let product of products.details;let i=index">
+                          <td>{{product.productid.name}}</td>
+                          <td>{{product.unitname}}</td>
+                          <td>{{product.quntity}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    الاجمالي : {{products.totalamount}}
+                  </div>
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    المدفوع : {{products.cash}}
+                  </div>
+                  <div class="col-md-4 text-right" style="font-weight: bold; color: #1c2128;">
+                    المتبقي :
+                    {{products.totalamount-products.cash}}
+                  </div>
+                </div>
+                <hr style="border: 1px solid red;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

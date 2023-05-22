@@ -1,0 +1,116 @@
+<div class=" content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">اضافه الشيكات</h5>
+                </div>
+                <div class=" card-body">
+                    <form [formGroup]="checkForm" (ngSubmit)="onSubmit()">
+                        <div class="alert alert-danger" role="alert" *ngIf="err">
+                            {{message}}
+                        </div>
+                        <div class=" row">
+                            <div class=" col-md-4 pl-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">العميل</label>
+                                    <select formControlName="client" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.client.errors }">
+                                        <option value="" disabled></option>
+                                        <option  *ngFor="let client of clients;" value={{client._id}}>{{client.name}}</option>
+                                      
+                                    </select>
+                                    <div *ngIf="submitted && f.client.errors" class="invalid-feedback">
+                                        <div *ngIf="f.client.errors.required">تحديد العميل الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">قيمه الشيك</label>
+                                    <input type="number" formControlName="value" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.value.errors }" />
+                                    <div *ngIf="submitted && f.value.errors" class="invalid-feedback">
+                                        <div *ngIf="f.value.errors.required">تحديد قيمه الشيك الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">تاريخ صرف الشيك</label>
+                                    <input type="date" formControlName="dateexpire" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.dateexpire.errors }" />
+                                    <div *ngIf="submitted && f.dateexpire.errors" class="invalid-feedback">
+                                        <div *ngIf="f.dateexpire.errors.required">تحديد تاريخ صرف الشيك الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class=" row">
+                            <div class=" col-md-4 pl-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">الخزينه</label>
+                                    <select formControlName="treasury" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.treasury.errors }">
+                                        <option value="" disabled></option>
+                                        <option  *ngFor="let treasury of treasuries;" value={{treasury._id}} >{{treasury.name}}</option>
+                                       
+                                    </select>
+                                    <div *ngIf="submitted && f.treasury.errors" class="invalid-feedback">
+                                        <div *ngIf="f.treasury.errors.required">تحديد الخزينه الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">رقم الشيك</label>
+                                    <input type="number" formControlName="checkno" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.checkno.errors }" />
+                                    <div *ngIf="submitted && f.checkno.errors" class="invalid-feedback">
+                                        <div *ngIf="f.checkno.errors.required">تحديد رقم الشيك الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">ملاحظات</label>
+                                    <input class=" form-control" formControlName="note" type="text" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger" type="submit">أضافه</button>
+                        </div>
+                    </form>
+                </div>
+                <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right" id="">
+                        <thead class="text-center">
+                            <tr>
+                                <th>اسم العميل</th>
+                                <th>المبلغ</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>رقم الشيك</th>
+                                <th>الخزينه</th>
+                                <th>ملاحظات</th>
+                        </thead>
+                        <tbody class="text-right">
+                            <tr *ngFor="let check of checks;">
+                                <td>{{check.client.name}}</td>
+                                <td>{{check.value}}</td>
+                                <td>{{check.dateexpire | date: 'dd/MM/yyyy'}}</td>
+                                <td>{{check.checkno}}</td>
+                                <td>{{check.treasury.name}}</td>
+                                <td>{{check.note}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

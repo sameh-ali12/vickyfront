@@ -1,0 +1,72 @@
+<div class=" content">
+  <div class=" row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">توريد ماليه </h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
+            <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div>
+            <div class=" row">
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">القيمه</label>
+                  <input type="number" formControlName="value" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.value.errors }" />
+                  <div *ngIf="submitted && f.value.errors" class="invalid-feedback">
+                    <div *ngIf="f.value.errors.required">القيمه الزاميه</div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-4 pl-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الخزينه</label>
+                  <select formControlName="treasury" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.treasury.errors }">
+
+                    <option value="" disabled></option>
+                    <option *ngFor="let treasury of treasuries;" value={{treasury._id}}>{{treasury.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && f.treasury.errors" class="invalid-feedback">
+                    <div *ngIf="f.treasury.errors.required">تحديد الخزينه الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-4 pl-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الي</label>
+                  <select formControlName="partner" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.partner.errors }">
+                    <option value="" disabled></option>
+                    <option *ngFor="let user of users;" value={{user._id}}>{{user.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && f.partner.errors" class="invalid-feedback">
+                    <div *ngIf="s.partner.errors.required">تحديد الشريك الزامي</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class=" row">
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">ملاحظات</label>
+                  <input class=" form-control" type="text" value="" formControlName="note" />
+                </div>
+              </div>
+            </div>
+            <div class=" card-footer">
+              <button class=" btn btn-fill btn-danger" type="submit">ارسال</button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

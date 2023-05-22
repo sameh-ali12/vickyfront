@@ -1,0 +1,69 @@
+
+
+
+<!-- <div class="logo">
+  <a href="" class="simple-text logo-mini">
+    <div class="logo-img">
+      <img src="./assets/img/angular2-logo-white.png"/>
+    </div>
+  </a>
+  <a href="" class="simple-text logo-normal">
+    {{name}}
+  </a>
+</div>
+<div class="sidebar-wrapper heightsidebar">
+  <nav id="menu_box">
+    <ul class="menu" *ngFor="let menuItem of menuItems">
+      <li class="nav-item">
+        <a href="#"> <i class="{{menuItem.icon}}"></i> {{ menuItem.title }}</a>
+        <ul *ngFor="let i of menuItem.obj">
+          <li><a [routerLink]="i.path"> {{i.title}}</a>
+            <ul *ngFor="let ii of i.obj" >
+              <li class="nav-item"><a [routerLink]="ii.path"> {{ii.title}}</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+</div> -->
+
+
+
+
+
+<div class="sidebar-wrapper heightsidebar" >
+  <div id="menu_box">
+ 
+    <div class="side-bar">
+      <header>
+   
+        <div class="logo">
+          <a href="" class="simple-text logo-mini">
+            <div class="logo-img">
+              <img src="./assets/img/angular2-logo-white.png"/>
+            </div>
+          </a>
+          <a href="" class="simple-text logo-normal">
+            {{name}}
+          </a>
+        </div>
+         </header>
+      <div class="menu" style="text-align:right">
+        <div class="item" *ngFor="let menuItem of menuItems">
+          <a class="sub-btn"><i class="{{menuItem.icon}}"></i> {{ menuItem.title }}</a>
+          <div class="sub-menu">
+              <a   *ngFor="let i of menuItem.obj" [routerLink]="i.path" class="sub-item">{{i.title}}</a>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+

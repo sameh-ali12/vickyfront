@@ -1,0 +1,113 @@
+<div class=" content">
+  <div class=" row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">اذن توريد</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="paymentsuppliersForm" (ngSubmit)="onSubmit()">
+            <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div>
+            <div class="row">
+              <div class="col-md-3 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">توريد من</label>
+                  <select formControlName="from" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.from.errors }"
+                    (change)="onChangFrom($event.target.value)">
+                    <option value="" disabled selected></option>
+                    <option value="0">المندوب</option>
+                    <option value="1">العميل</option>
+                  </select>
+                  <div *ngIf="submitted && f.from.errors" class="invalid-feedback">
+                    <div *ngIf="f.from.errors.required">الحقل الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <!-- //////المندوب -->
+              <div class=" col-md-3 px-md-1" *ngIf="salesfalg">
+                <div class=" form-group" style="margin-top:20px !important;">
+                  <ng-autocomplete #auto [data]="sales" [searchKeyword]="keyword" placeholder="اختارالمندوب"
+                    (selected)='selectEventSales($event)' [itemTemplate]="itemTemplate"
+                    [notFoundTemplate]="notFoundTemplate">
+                  </ng-autocomplete>
+                  <ng-template #itemTemplate let-item>
+                    <a [innerHTML]="item.name"></a>
+                  </ng-template>
+                  <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                  </ng-template>
+                </div>
+              </div>
+              <!-- /////العميل -->
+              <div class=" col-md-3 px-md-1" *ngIf="clientflag">
+                <div class=" form-group" style="margin-top:20px !important;">
+                  <ng-autocomplete #auto [data]="clients" [searchKeyword]="keyword" placeholder="اختار العميل"
+                    (selected)='selectEvent($event)' [itemTemplate]="itemTemplate"
+                    [notFoundTemplate]="notFoundTemplate">
+                  </ng-autocomplete>
+                  <ng-template #itemTemplate let-item>
+                    <a [innerHTML]="item.name"></a>
+                  </ng-template>
+                  <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="col-md-3 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الخزينه</label>
+                  <select formControlName="treasury" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.treasury.errors }">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let treasury of treasuries;" value={{treasury._id}}>
+                      {{treasury.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && f.treasury.errors" class="invalid-feedback">
+                    <div *ngIf="f.treasury.errors.required">تحديد الخزينه الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-3 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">المبلغ</label>
+                  <input type="number" formControlName="value" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.value.errors }"
+                    (change)="onchangecash($event.target.value)" />
+                  <div *ngIf="submitted && f.value.errors" class="invalid-feedback">
+                    <div *ngIf="f.value.errors.required">تحديد المبلغ الزامي</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الرصيد قبل العميله</label>
+                  <input class=" form-control" type="text" disabled value="" formControlName="balancebefore" />
+                </div>
+              </div>
+              <div class="col-md-4 pr-md-1">
+                <div class="form-group">
+                  <label class="pull-right">الرصيد بعد العمليه</label>
+                  <input class=" form-control" type="text" disabled value="" formControlName="balanceafter" />
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">ملاحظات</label>
+                  <input class=" form-control" type="text" formControlName="notes" value="" />
+                </div>
+              </div>
+            </div>
+            <div class=" card-footer">
+              <button class=" btn btn-fill btn-danger" type="submit">أضافه</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div class="content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">تقارير تفاصيل العملاء</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <div class="row">
+              <div class="col-md-12">
+                <div class=" form-group">
+                  <label class="pull-right">خط السير</label>
+                  <select formControlName="itinerary" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.itinerary.errors }">
+                    <option value="" disabled></option>
+                    <option *ngFor="let elment of itineraries;" value={{elment._id}}>{{elment.name}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-12">
+              <button class="btn btn-fill btn-danger">بحث</button>
+            </div>
+          </form>
+          <button class="btn btn-fill btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i> طباعه الكل
+  </button>
+  <!-- report -->
+  <div class="card" style="padding:0!important" id="clients">
+    <div class="card-body">
+      <div class=" table-responsive">
+        <table class=" table tablesorter pull-right" id="">
+          <thead class="text-center">
+            <tr>
+              <th>اسم العميل</th>
+              <th>رقم التواصل</th>
+              <th>العنوان</th>
+            </tr>
+          </thead>
+          <tbody class="text-right">
+            <tr *ngFor="let client of obj;">
+              <td>{{client.name}}</td>
+              <td>{{client.phonenumber}}</td>
+              <td>{{client.address}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

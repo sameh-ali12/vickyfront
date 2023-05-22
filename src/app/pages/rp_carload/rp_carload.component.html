@@ -1,0 +1,123 @@
+<div class="content">
+  <div class="row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">تقارير حموله السيارات</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <!-- <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div> -->
+            <div class="row">
+
+              <div class=" col-md-12 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right"> المندوب</label>
+                  <select formControlName="salesman" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.salesman.errors }">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let man of sales;" value={{man._id}}>{{man.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && s.salesman.errors" class="invalid-feedback">
+                    <div *ngIf="s.salesman.errors.required">تحديد المندوب الزامي</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-fill btn-danger" type="submit">بحث</button>
+          </form>
+          <button class="btn btn-fill btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <i id="carload">
+    <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i>
+      طباعه الكل</button>
+    <div class="row" *ngIf="getalldata">
+      <div class="col-md-12">
+        <div class="card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right">تفاصيل التحميل</h4>
+          </div>
+          <div class=" card-body">
+            <div class="table-responsive">
+              <table style="font-size: 150%!important;color: black; padding: 0; margin: 0;"
+                class="table table-bordered table-striped text-center " id="">
+                <thead class="text-center">
+                  <tr>
+                    <th>العملاء</th>
+                    <th>الصنف</th>
+                    <th>الكميه بالوحده الصغري</th>
+                    <th>الكميه بالوحده الكبري</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right ">
+                  <tr *ngFor="let product of obj.carstore;let i=index" class="h-25">
+                    <td>{{i+1}}</td>
+                    <td>{{product.productid.name}}</td>
+                    <td>{{product.quntity}}({{product.productid.smallunit}})</td>
+                    <td><i *ngIf="product.quntity % product.productid.countunit != 0"> {{product.quntity %
+                        product.productid.countunit}}/</i> {{product.quntity / product.productid.countunit |
+                      round}}({{product.productid.bigunit}})
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                  <div class=" form-group">
+                    <label class="pull-right">خط سير</label>
+                    <select  class="form-control" (change)="onChange($event.target.value)" >
+                      <option value="" disabled></option>
+                      <option *ngFor="let itinerary of itineraries;" value={{itinerary._id}}>{{itinerary.name}}</option>
+                    </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-primary" (click)="printdaily()" *ngIf="!printmode"><i class="fas fa-print"></i>
+                  طباعه تقرير اليوميه</button>
+              </div>
+            </div>
+
+
+            <div class="" id="dailyrp">
+              <table class="customtable" style="size: auto; width: 1200px  !important;height: 2480px !important;">
+                <thead class="text-center">
+                  <tr>
+                    <th>م</th>
+                    <th *ngFor="let product of obj.carstore;let i=index" scope="col">{{product.productid.name}}</th>
+                    <th scope="col">الاجمالي</th>
+                    <th scope="col" >المديونيه</th>
+                    <th scope="col" >المدفوع</th>
+                    <th scope="col" >المتبقي</th>
+   
+
+
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                 <tr  *ngFor="let client of clients;let i=index">
+                  <td>{{client.name}}</td>
+                  <td *ngFor="let product of obj.carstore;let i=index"></td>
+                  <td></td>
+                  <td>{{client.debtvalue}}</td>  
+                  <td></td>
+                  <td></td>
+              
+
+                 </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </i>
+</div>

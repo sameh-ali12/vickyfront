@@ -1,0 +1,62 @@
+<div class=" content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">المخازن</h5>
+                </div>
+                <div class=" card-body">
+                    <div class="alert alert-danger" role="alert" *ngIf="err">
+                        حدث خطأ
+                    </div>
+                    <form [formGroup]="storeForm" (ngSubmit)="onSubmit()">
+                        <div class=" row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">اسم المخزن</label>
+                                    <input type="text" formControlName="name" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+                                    <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                                        <div *ngIf="f.name.errors.required">ادخال اسم المخزن الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">العنوان</label>
+                                    <input type="text" formControlName="address" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.address.errors }" />
+                                    <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
+                                        <div *ngIf="f.address.errors.required">ادخال اسم المخزن الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger" type="submit">أضافه</button>
+                        </div>
+                    </form>
+                </div>
+           
+                <div class=" table-responsive">
+                    <table style="font-size: 150%!important;color: black;" class="table table-bordered table-striped text-center" id="stores">
+                        <thead class="text-center">
+                            <tr>
+                                <th>اسم المخزن</th>
+                                <th>العنوان</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-right">
+                            <tr *ngFor="let store of stores;">
+                                <td>{{store.name}}</td>
+                                <td>{{store.address}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary" (click)="print()" *ngIf="!printmode"><i class="fas fa-print"></i>
+                    طباعه</button>
+            </div>
+        </div>
+    </div>
+</div>

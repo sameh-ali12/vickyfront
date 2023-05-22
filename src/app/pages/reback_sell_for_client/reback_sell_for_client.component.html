@@ -1,0 +1,226 @@
+<div class=" content">
+  <div class=" row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">مرتجع فاتوره بيع</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div>
+            <div class="row card">
+              <div class="col-md-12">
+                <div class=" form-group">
+                  <label class="pull-right">رقم الفاتوره</label>
+                  <input type="number" formControlName="billno" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted2 && s.billno.errors }" />
+                  <div *ngIf="submitted2 && s.billno.errors" class="invalid-feedback">
+                    <div *ngIf="s.billno.errors.required">تحديد الفاتوره الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-fill btn-danger">بحث</button>
+            </div>
+          </form>
+          <form [formGroup]="downloadForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class=" col-md-4 px-md-1">
+                <div class=" form-group">
+                  <label class="pull-right"> الصنف</label>
+                  <select formControlName="product" class="form-control" (change)="onChangeproduct($event.target.value)"
+                    [ngClass]="{ 'is-invalid': submitted && f.product.errors }" id="productname">
+                    <option value="" selected></option>
+                    <ng-container *ngFor="let product of carstore;">
+                      <option *ngIf="product.realquntity > 0" value={{product.productid._id}}>
+                       {{product.productid.name}}</option>
+                     </ng-container>
+
+                    <!-- <option *ngFor="let product of carstore;" value={{product.productid._id}}>
+                      {{product.productid.name}}</option> -->
+                  </select>
+
+             
+
+                  <div *ngIf="submitted && f.product.errors" class="invalid-feedback">
+                    <div *ngIf="f.product.errors.required">تحديد الصنف الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-4 pl-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الوحده</label>
+                  <select formControlName="unit" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.unit.errors }" id="unitname">
+                    <option value="" disabled></option>
+                    <option value="bigunit">{{bigunit}}</option>
+                    <option value="smallunit">{{smallunit}}</option>
+                  </select>
+                  <div *ngIf="submitted && f.unit.errors" class="invalid-feedback">
+                    <div *ngIf="f.unit.errors.required"> تحديد الوحده الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الكميه</label>
+                  <input type="number" formControlName="quntity" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.quntity.errors }" />
+                  <div *ngIf="submitted && f.quntity.errors" class="invalid-feedback">
+                    <div *ngIf="f.quntity.errors.required">تحديد الكميه الزامي</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class=" row">
+              <div class=" col-md-4 pl-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">السعر</label>
+                  <input type="number" formControlName="price" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.price.errors }" />
+                  <div *ngIf="submitted && f.price.errors" class="invalid-feedback">
+                    <div *ngIf="f.price.errors.required">تحديد السعر الزامي</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class=" card-footer">
+              <button class=" btn btn-fill btn-danger" type="submit">اضافه</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+        </div>
+        <div class=" card-body">
+          <div class=" table-responsive">
+            <table class=" table tablesorter pull-right" id="">
+              <thead class="text-center">
+                <tr>
+                  <th>الصنف</th>
+                  <th>الوحده</th>
+                  <th>الكميه</th>
+                  <th>السعر</th>
+                  <th>الاجمالي</th>
+                </tr>
+              </thead>
+              <tbody class="text-right">
+                <tr *ngFor="let product of enterdproducts;let i=index">
+                  <td>{{product.productname}}</td>
+                  <td>{{product.unitname}}</td>
+                  <td>{{product.quntity}}</td>
+                  <td>{{product.price}}</td>
+                  <td>{{product.price * product.quntity}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class=" row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">اجمالي التفاصيل</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="totalsellclientsForm" (ngSubmit)="submittall()">
+            <div class=" row">
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الاجمالي</label>
+                  <input class=" form-control" disabled="true" type="number" value="123"
+                    formControlName="totalamount" />
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">المدفوع</label>
+                  <input type="number" formControlName="cash" class="form-control"
+                    (change)="onChangeCash($event.target.value)"
+                    [ngClass]="{ 'is-invalid': submitted3 && h.cash.errors }"  />
+                  <div *ngIf="submitted3 && h.cash.errors" class="invalid-feedback">
+                    <div *ngIf="h.cash.errors.required">تحديد المدفوع الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">المتبقي</label>
+                  <input class=" form-control" disabled="true" type="number" value="123" formControlName="remain" />
+                </div>
+              </div>
+            </div>
+            <div class=" row">
+
+              <div class="col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">المخزن</label>
+                  <select formControlName="store" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted3 && h.store.errors }">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let store of stores;" value={{store._id}}>{{store.name}}</option>
+                  </select>
+                  <div *ngIf="submitted3 && h.store.errors" class="invalid-feedback">
+                    <div *ngIf="h.store.errors.required">تحديد المخزن الزامي</div>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الرصيد قبل العميله</label>
+                  <input class=" form-control" type="text" disabled value=""
+                    formControlName="balancebefore" />
+                </div>
+              </div>
+              <div class="col-md-4 pr-md-1">
+                <div class="form-group">
+                  <label class="pull-right">الرصيد بعد العمليه</label>
+                  <input class=" form-control" type="text" disabled value="" formControlName="balanceafter" />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">الخزينه</label>
+                  <select formControlName="treasury" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted3 && h.treasury.errors }">
+                    <option value="" disabled selected></option>
+                    <option *ngFor="let treasury of treasuries;" value={{treasury._id}}>{{treasury.name}}</option>
+                  </select>
+                  <div *ngIf="submitted3 && h.treasury.errors" class="invalid-feedback">
+                    <div *ngIf="h.treasury.errors.required">تحديد الخزينه الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 pr-md-1">
+                <div class="form-group">
+                  <label class="pull-right">ملاحظات</label>
+                  <input class=" form-control" type="text" value="" formControlName="notes" />
+                </div>
+              </div>
+
+            </div>
+
+            <div class=" card-footer">
+              <button class=" btn btn-fill btn-danger" type="submit"> ارسال</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

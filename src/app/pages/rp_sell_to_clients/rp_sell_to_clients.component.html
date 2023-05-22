@@ -1,0 +1,245 @@
+<div class=" content">
+  <div class=" row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right"> تقارير المبيعات</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchform" (ngSubmit)="onSubmit()">
+
+            <div class="row">
+              <div class=" col-md-6 pl-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">العملاء</label>
+                  <select formControlName="client" class="form-control">
+                    <option value="all" selected>كل العملاء</option>
+                    <option *ngFor="let client of clients" value={{client._id}}>
+                      {{client.name}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class=" col-md-6 pl-md-1">
+                <div class=" form-group">
+                  <label class="pull-right">المندوبين</label>
+                  <select formControlName="sales" class="form-control">
+                    <option value="all" selected>الكل</option>
+                    <option value="store">من المخزن</option>
+                    <option value="allsales">كل المندوبين</option>
+                    <option *ngFor="let el of sales" value={{el._id}}>
+                      {{el.name}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">من</label>
+                  <input type="date" formControlName="from" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.from.errors }" />
+                  <div *ngIf="submitted && f.from.errors" class="invalid-feedback">
+                    <div *ngIf="f.from.errors.required"> تحديد القيمه الزامي</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">الي</label>
+                  <input type="date" formControlName="to" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && f.to.errors }" />
+                  <div *ngIf="submitted && f.to.errors" class="invalid-feedback">
+                    <div *ngIf="f.to.errors.required"> تحديد القيمه الزامي</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class=" card-footer">
+              <button class=" btn btn-fill btn-danger" type="submit">بحث</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i> طباعه الكل
+      </button>
+      <!-- report -->
+      <div id="alldoc">
+        <div class="card" *ngFor="let bill of obj;let i=index" id={{i}}>
+          <div class="row">
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              تاريخ تحرير الفاتوره:
+              {{bill.date| date: 'dd/MM/yyyy'}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              رقم الفاتوره:
+              {{bill.billno}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;" *ngIf="!bill.directfromstore">
+              المندوب:
+              {{bill.sales.name}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;" *ngIf="bill.directfromstore">
+              من المخزن:
+              {{bill.user?.name}}
+            </div>
+
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;" *ngIf="!bill.forsupplier" >
+              العميل:
+              {{bill.client.name}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;" *ngIf="bill.forsupplier" >
+              المورد:
+              {{bill.supplier.name}}
+            </div>
+
+
+          </div>
+          <div class=" card">
+            <div class=" card-header">
+              <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+            </div>
+
+            <div class=" card-body" *ngIf="bill.directfromstore">
+              <div class="table-responsive">
+                <table class=" table tablesorter pull-right">
+                  <thead class="text-center">
+                    <tr>
+                      <th>الصنف</th>
+                      <th>الوحده</th>
+                      <th>الكميه</th>
+                      <th>السعر</th>
+                      <th>الاجمالي</th>
+                      <th>المخرن</th>
+
+                    </tr>
+                  </thead>
+                  <tbody class="text-right">
+                    <tr *ngFor="let product of bill.details;let i=index">
+                      <td>{{product.productid.name}}</td>
+                      <td>{{product.unitname}}</td>
+                      <td>{{product.quntity}}</td>
+                      <td>{{product.price}}</td>
+                      <td>{{product.quntity*product.price}}</td>
+                      <td>{{product.fromstore?.name}}</td>
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class=" card-body" *ngIf="!bill.directfromstore">
+              <div class="table-responsive">
+                <table class=" table tablesorter pull-right">
+                  <thead class="text-center">
+                    <tr>
+                      <th>الصنف</th>
+                      <th>الوحده</th>
+                      <th>الكميه</th>
+                      <th>السعر</th>
+                      <th>الاجمالي</th>
+
+                    </tr>
+                  </thead>
+                  <tbody class="text-right">
+                    <tr *ngFor="let product of bill.details;let i=index">
+                      <td>{{product.productid.name}}</td>
+                      <td>{{product.unitname}}</td>
+                      <td>{{product.quntity}}</td>
+                      <td>{{product.price}}</td>
+                      <td>{{product.quntity*product.price}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                الاجمالي : {{bill.totalamount}}
+              </div>
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                المدفوع : {{bill.cashed}}
+              </div>
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                الخصم : {{bill.discount}}
+              </div>
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+                المتبقي : {{bill.totalamount-bill.cashed-bill.discount}}
+              </div>
+
+              <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;" *ngIf="bill.cashed != 0">
+                الخزينه : {{bill.treasury?.name}}
+              </div>
+
+            </div>
+            <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+              طباعه</button>
+              <button class="btn btn-danger" (click)="remove(bill._id)" *ngIf="!printmode"><i class="fas fa-trash"></i>
+                حذف</button>
+            <hr style="border: 1px solid red;">
+          </div>
+        </div>
+        <div class=" card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right" style="font-weight: bold; color: #1c2128;">الملخص المجمع</h4>
+          </div>
+
+          <div class=" card-body">
+            <div class="table-responsive">
+              <table class=" table tablesorter pull-right">
+                <thead class="text-center">
+                  <tr>
+                    <th>الصنف</th>
+                    <th>اجمالي الكميه</th>
+                    <th>اجمالي البيع</th>
+                    <th>اجمالي الشراء</th>
+                    <th>اجمالي الربح</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr *ngFor="let product of groupbyproducts;let i=index">
+                    <td>{{product.productid.name}}</td>
+                    <td>
+                    {{product.realquntity %
+                      product.productid.countunit}}/ {{product.realquntity /
+                        product.productid.countunit | round}}({{product.productid.bigunit}}) </td>
+                        <td>{{product.total}}</td>
+                        <td>{{product.selltotal}}</td>
+                        <td>{{product.total - product.selltotal}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class=" card-body">
+            <div class="table-responsive">
+              <table class=" table tablesorter pull-right" id="">
+                <thead class="text-center">
+                  <tr>
+                    <th style="font-weight: bold; color: #1c2128;">الاجمالي</th>
+                    <th style="font-weight: bold; color: #1c2128;">المدفوع</th>
+                    <th style="font-weight: bold; color: #1c2128;">الخصم</th>
+                    <th style="font-weight: bold; color: #1c2128;">المتبقي</th>
+
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr>
+                    <td style="font-weight: bold; color: #1c2128;"> {{total}}</td>
+                    <td style="font-weight: bold; color: #1c2128;">{{cashed}}</td>
+                    <td style="font-weight: bold; color: #1c2128;">{{discount}}</td>
+                    <td style="font-weight: bold; color: #1c2128;">{{total-cashed}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <hr style="border: 1px solid red;">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

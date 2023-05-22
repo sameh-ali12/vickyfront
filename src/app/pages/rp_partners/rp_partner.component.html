@@ -1,0 +1,251 @@
+<div class="content">
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class=" btn-group btn-group-toggle float-right" data-toggle="buttons">
+        <label class=" btn btn-sm btn-danger btn-simple" (click)="clicked=true;clicked1=false;buybills=[]"
+          [ngClass]="{'active':clicked===true}">
+          <input checked="checked" name="options" type="radio" />
+          <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+            المبيعات
+          </span>
+          <span class="d-block d-sm-none">
+            <i class="tim-icons icon-single-02"> </i>
+          </span>
+        </label>
+        <label class="btn btn-sm btn-danger btn-simple" (click)="clicked1=true;clicked=false;sellbills=[]"
+          [ngClass]="{'active':clicked1===true}">
+          <input class="d-none d-sm-none" name="options" type="radio" />
+          <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+            المشتريات
+          </span>
+          <span class="d-block d-sm-none">
+            <i class="tim-icons icon-gift-2"></i>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class=" card-header">
+          <h5 class="title text-right">تقارير <i *ngIf="clicked">المبيعات</i><i *ngIf="clicked1">المشتريات</i>
+            بين الشركاء</h5>
+        </div>
+        <div class=" card-body">
+          <form [formGroup]="searchForm" (ngSubmit)="onSubmitsearch()">
+            <!-- <div class="alert alert-danger" role="alert" *ngIf="err">
+              {{message}}
+            </div> -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">حالة الفاتوره</label>
+                  <select formControlName="status" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.status.errors }">
+                    <option value="" disabled selected></option>
+                    <option value="accept">مقبوله</option>
+                    <option value="refuse">مرفوضه</option>
+                    <option value="underprocess">معلقه</option>
+
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">الشريك</label>
+                  <select formControlName="partner" class="form-control"
+                    [ngClass]="{ 'is-invalid': submitted && s.partner.errors }">
+                    <option value="" disabled></option>
+                    <option *ngFor="let user of users;" value={{user._id}}>{{user.name}}</option>
+                  </select>
+
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">من</label>
+                  <input type="date" formControlName="from" class="form-control" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class=" form-group">
+                  <label class="pull-right">الي</label>
+                  <input type="date" formControlName="to" class="form-control" />
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-fill btn-danger">بحث</button>
+
+          </form>
+          <button class="btn btn-fill btn-warning pull-right" (click)="onRest()">اعاده بيانات البحث</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="clicked" id="sellbills">
+    <button class="btn btn-primary" (click)="printallsell()" *ngIf="!printmode"><i class="fas fa-print"></i> طباعه الكل
+    </button>
+
+    <div *ngIf="sellbills" class="card-header mb-5">
+      <h3 class=" card-title text-right">طلبات البيع</h3>
+    </div>
+
+    <div class="row" *ngFor="let sellbill of sellbills;let i=index" id={{i}}>
+      <div class="col-md-12">
+        <span class="badge badge-success" *ngIf="sellbill.status == 'accept'" style="font-size: 150%;">مقبوله</span>
+        <span class="badge badge-danger" *ngIf="sellbill.status ==  'refuse'" style="font-size: 150%;">مرفوضه</span>
+        <span class="badge badge-warning" *ngIf="sellbill.status ==  'underprocess'" style="font-size: 150%;">تحت
+          الاجراء</span>
+      </div>
+
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الارسال:
+            {{sellbill.daterecived | date: 'dd/MM/yyyy'}}
+          </div>
+
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الاجراء:
+            {{sellbill.dateaction | date: 'dd/MM/yyyy'}}
+          </div>
+        </div>
+        <div class=" card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+          </div>
+          <div class=" card-body">
+            <div class="table-responsive">
+              <table class=" table tablesorter pull-right" id="">
+                <thead class="text-center">
+                  <tr>
+                    <th>الصنف</th>
+                    <th>الوحده</th>
+                    <th>الكميه</th>
+                    <th>السعر</th>
+                    <th>الاجمالي</th>
+                    <th>المخزن</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr *ngFor="let product of sellbill.details;let i=index">
+                    <td>{{product.productid.name}}</td>
+                    <td>{{product.unitname}}</td>
+                    <td>{{product.viewquntity}}</td>
+                    <td>{{product.price}}</td>
+                    <td>{{product.viewquntity*product.price}}</td>
+                    <td>{{product.fromstore.name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الاجمالي : {{sellbill.total}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المدفوع : {{sellbill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المتبقي : {{sellbill.total-sellbill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الي : {{sellbill.to.name}}
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="print(i)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+          <hr style="border: 1px solid red;">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card"  id="buybills" *ngIf="clicked1">
+    <button class="btn btn-primary" (click)="printallbuy()" *ngIf="!printmode"><i class="fas fa-print"></i> طباعه الكل
+    </button>
+
+    <div *ngIf="sellbills" class="card-header mb-5">
+      <h3 class=" card-title text-right">طلبات الشراء</h3>
+    </div>
+    <div class="row" *ngFor="let sellbill of buybills;let ii=index">
+
+      <div class="col-md-12">
+        <span class="badge badge-success" *ngIf="sellbill.status == 'accept'" style="font-size: 150%;">مقبوله</span>
+        <span class="badge badge-danger" *ngIf="sellbill.status ==  'refuse'" style="font-size: 150%;">مرفوضه</span>
+        <span class="badge badge-warning" *ngIf="sellbill.status ==  'underprocess'" style="font-size: 150%;">تحت
+          الاجراء</span>
+      </div>
+
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الارسال:
+            {{sellbill.daterecived | date: 'dd/MM/yyyy'}}
+          </div>
+
+          <div class="col-md-6 text-right" style="font-weight: bold; color: #1c2128;">
+            تاريخ الاجراء:
+            {{sellbill.dateaction | date: 'dd/MM/yyyy'}}
+          </div>
+        </div>
+        <div class=" card">
+          <div class=" card-header">
+            <h4 class=" card-title pull-right">تفاصيل الفاتوره</h4>
+          </div>
+          <div class=" card-body">
+            <div class=" table-responsive">
+              <table class=" table tablesorter pull-right" id="">
+                <thead class="text-center">
+                  <tr>
+                    <th>الصنف</th>
+                    <th>الوحده</th>
+                    <th>الكميه</th>
+                    <th>السعر</th>
+                    <th>الاجمالي</th>
+                  </tr>
+                </thead>
+                <tbody class="text-right">
+                  <tr *ngFor="let product of sellbill.details;let i=index">
+                    <td>{{product.productid.name}}</td>
+                    <td>{{product.unitname}}</td>
+                    <td>{{product.viewquntity}}</td>
+                    <td>{{product.price}}</td>
+                    <td>{{product.viewquntity*product.price}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الاجمالي : {{sellbill.total}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المدفوع : {{sellbill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              المتبقي : {{sellbill.total-sellbill.cashed}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              من : {{sellbill.from.name}}
+            </div>
+            <div class="col-md-3 text-right" style="font-weight: bold; color: #1c2128;">
+              الي مخزن : {{sellbill.tostore.name}}
+            </div>
+
+          </div>
+          <button class="btn btn-primary" (click)="print(ii)" *ngIf="!printmode"><i class="fas fa-print"></i>
+            طباعه</button>
+          <hr style="border: 1px solid red;">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

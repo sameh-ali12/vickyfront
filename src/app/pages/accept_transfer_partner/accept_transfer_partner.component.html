@@ -1,0 +1,59 @@
+<div class=" content">
+  <div class=" row">
+    <div class=" col-md-12">
+      <div class=" card">
+        <div class="alert alert-danger" role="alert" *ngIf="err">
+          {{message}}
+        </div>
+        <ngb-accordion class="range-accordion">
+          <ngb-panel *ngFor="let order of transferorders;">
+            <ng-template ngbPanelTitle>
+              <div style="font-weight: bold; color: #1c2128;">
+                {{order.daterecived | date: 'dd/MM/yyyy'}}
+              </div>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <div class="row" style="padding:0!important">
+                <div class="card-body">
+                  <div class=" table-responsive">
+                    <table class=" table tablesorter pull-right">
+                      <thead class="text-center">
+                        <tr>
+                          <th>التاريخ</th>
+                          <th>من</th>
+                          <th>الي</th>
+                          <th>المبلغ</th>
+                          <th>ملاحظات</th>
+                          <th>الي خزينه</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-right">
+                        <tr>
+                          <td>{{order.daterecived | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{order.from.name}}</td>
+                          <td>{{order.to.name}}</td>
+                          <td>{{order.value}}</td>
+                          <td>{{order.note}}</td>
+                          <td>
+                            <select [(ngModel)]="treasury" class="form-control">
+                            <option value="" disabled></option>
+                            <option *ngFor="let treasury of treasuries;" value={{treasury._id}}>{{treasury.name}}</option>
+                          </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div class=" card-footer">
+                      <button class=" btn btn-fill btn-danger" (click)="accept(order)">قبول</button>
+                      <button class=" btn btn-fill btn-alert" (click)="refuse(order)">رفض</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+      </div>
+    </div>
+  </div>
+</div>

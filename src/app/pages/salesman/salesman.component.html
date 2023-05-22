@@ -1,0 +1,72 @@
+<div class=" content">
+    <div class=" row">
+        <div class=" col-md-12">
+            <div class=" card">
+                <div class=" card-header">
+                    <h5 class="title text-right">المندوبين</h5>
+                </div>
+                <div class=" card-body">
+                    <div class="alert alert-danger" role="alert" *ngIf="err">
+                        حدث خطأ
+                    </div>
+                    <form [formGroup]="salesmanForm" (ngSubmit)="onSubmit()">
+                        <div class=" row">
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">اسم المندوب</label>
+                                    <input type="text" formControlName="name" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+                                    <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                                        <div *ngIf="f.name.errors.required">تحديد اسم المندوب الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">رقم التواصل</label>
+                                    <input type="text" formControlName="phonenumber" class="form-control"
+                                        [ngClass]="{ 'is-invalid': submitted && f.phonenumber.errors }" />
+                                    <div *ngIf="submitted && f.phonenumber.errors" class="invalid-feedback">
+                                        <div *ngIf="f.phonenumber.errors.required">تحديد رقم المندوب الزامي</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-md-4 pr-md-1">
+                                <div class=" form-group">
+                                    <label class="pull-right">ملاحظات</label>
+                                    <input class=" form-control" type="text" value=""  formControlName="note"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" card-footer">
+                            <button class=" btn btn-fill btn-danger" type="submit">أضافه</button>
+                        </div>
+                    </form>
+                </div>
+
+                <button class="btn btn-primary" (click)="printall()" *ngIf="!printmode"><i class="fas fa-print"></i> طباعه الكل
+                </button>
+                <div class=" table-responsive" id="sales">
+                    <table class=" table tablesorter pull-right">
+                        <thead class="text-center">
+                            <tr>
+                                <th>اسم المندوب</th>
+                                <th>رقم التواصل</th>
+                                <th>ملاحظات</th>
+
+                            </tr>
+                        </thead>
+                        <tbody class="text-right">
+                            <tr *ngFor="let sale of sales;">
+                                <td>{{sale.name}}</td>
+                                <td>{{sale.phonenumber}}</td>
+                                <td>{{sale.note}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
